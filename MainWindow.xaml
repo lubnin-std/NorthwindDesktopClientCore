@@ -1,0 +1,42 @@
+﻿<Window x:Class="NorthwindDesktopClientCore.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NorthwindDesktopClientCore"
+        xmlns:resx="clr-namespace:NorthwindDesktopClientCore.Resx"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1200">
+
+    <Window.Resources>
+        <ResourceDictionary Source="resx/MainWindowResources.xaml"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" MinWidth="150">
+            <ItemsControl
+                ItemsSource="{Binding Path=Commands}"
+                ItemTemplate="{StaticResource CommandsTemplate}"
+                />
+        </Border>
+
+        <!-- Можно было бы и тут сразу использовать TabControl, ведь воркспейсы -
+        суть коллекция итемов и для них логично использовать подкласс ItemsControl.
+        Однако здесь стоит ContentControl для демонстрации, во-первых, "биндинга ни
+        к чему" {Binding} (на самом деле - к родительскому свойству), а, во-вторых,
+        как можно в разметке оставить голый ContentControl, а всю настройку перенести
+        в ресурсы -->
+        <Border Grid.Column="2">
+            <ContentControl
+                Content="{Binding Path=Workspace}"
+                ContentTemplate="{StaticResource WorkspaceTemplate}"
+                />
+        </Border>
+    </Grid>
+</Window>

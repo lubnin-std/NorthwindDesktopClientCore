@@ -1,0 +1,60 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NorthwindDesktopClientCore.Resx"
+                    xmlns:viewmodels="clr-namespace:NorthwindDesktopClientCore.ViewModel"
+                    xmlns:views="clr-namespace:NorthwindDesktopClientCore.View">
+    
+    <!-- Сопоставление View и ViewModel'ов -->
+    <!-- Каждый ...ViewModel - это по сути такой же тип, как и что-то попроще, например, какой-нибудь Person.
+    Как для Person через DataTemplate можно задать, как он будет отображаться в условном списке, так и для
+    ViewModel можно задать шаблон, по которому Wpf будет его выводить [куда бы то ни было].
+    Собственно шаблон, т.е. фактическая разметка, у нас описан во View'хах, которые мы тут и указываем -->
+    <DataTemplate DataType="{x:Type viewmodels:EmployeeViewModel}">
+        <views:EmployeeView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodels:AllEmployeesViewModel}">
+        <views:AllEmployeesView/>
+    </DataTemplate>
+
+    
+    <!-- Шаблон для области команд -->
+    <DataTemplate x:Key="CommandsTemplate">
+        <TextBlock>
+            <Hyperlink Command="{Binding Path=Command}">
+                <TextBlock Text="{Binding Path=DisplayName}"/>
+            </Hyperlink>
+        </TextBlock>
+    </DataTemplate>
+
+
+    <!-- Шаблоны для области Workspace -->
+    <!-- Хоть каждый итем ТабКонтрола есть HeaderedContentControl, то есть имеет 
+    хедер и контент, нужно описать только шаблон хедера, т.к. описание контента
+    берется из ДатаТемплейтов в начале этого файла, ведь ТабКонтрол - суть коллекция
+    ВьюМоделов, а каждый ее элемент - это ВьюМодел, а для них сверху и задан как раз шаблон.
+    Причем тут никак явно не надо писать, что идет описание именно для хедера -->
+    <DataTemplate x:Key="ClosableTabItemTemplate">
+        <DockPanel>
+            <Button
+                Command="{Binding Path=CloseCommand}"
+                Content="X"
+                DockPanel.Dock="Right"
+                Focusable="False"
+                />
+            <ContentPresenter
+                Content="{Binding Path=DisplayName}"
+                />
+        </DockPanel>
+    </DataTemplate>
+
+    <!-- Пустой {Binding} говорит - "бери у родителя" -->
+    <DataTemplate x:Key="WorkspaceTemplate">
+        <TabControl
+            IsSynchronizedWithCurrentItem="True"
+            ItemsSource="{Binding}"
+            ItemTemplate="{StaticResource ClosableTabItemTemplate}"
+            />
+    </DataTemplate>
+    
+</ResourceDictionary>

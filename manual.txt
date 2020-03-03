@@ -1,0 +1,26 @@
+﻿В этом файле в общем виде описаны ключевые вопросы архитектуры приложения.
+
+    Связь между View и ViewModel'ами описывается в файле Resx/MainWindowResources.xaml
+через объект DataTemplate. Этот файл имеет тип ResourceDictionary.
+    Сам этот файл прикрепляется к главному окну через разметку, в MainWindow.xaml через
+свойство окна Resources.
+    Вся логика главного окна содержится в классе ViewModel/MainWindowViewModel.cs
+Тут создается экземпляр репозитория, команды меню, добавляются\удаляются вкладки и т.д.
+Объект MainWindowViewModel устанавливается как DataContext главного окна (MainWindow).
+Это происходит на старте приложения, в классе App.xaml.cs, в методе OnStartup.
+
+
+
+
+// Ресурсы
+
+
+// Шаблоны
+
+
+
+
+ContentControl
+
+ObservableCollection (System.Collections.ObjectModel)
+NotifyCollectionChangedEventArgs (System.Collection.Specialized)
