@@ -16,11 +16,12 @@ namespace NorthwindDesktopClientCore.ViewModel
         private Employees _emp;
         private bool _isSelected;
         private bool _unsavedChanges;
+        private IValidation _validator;
 
         public int EmployeeId {
             get { return _emp.EmployeeId; }
-            // Когда сотрудник сохраняется в БД и получает автоId, это поле изменяется
-            // и за счет этого новое полученное автоId сразу отображается в интерфейсе
+            // Когда сотрудник сохраняется в БД и получает автоId, оно сразу записывается в это поле,
+            // вызывая событие изменения, и за счет этого новое полученное автоId сразу отображается в интерфейсе
             set {
                 OnPropertyChanged("EmployeeId");
             }
@@ -207,7 +208,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
-        public EmployeeViewModel(Employees employee, NorthwindDbContext context, string vmDisplayName)
+        public EmployeeViewModel(Employees employee, NorthwindDbContext context, IValidation validator, string vmDisplayName)
         {
             if (employee == null)
                 throw new ArgumentNullException("employee");
@@ -217,6 +218,8 @@ namespace NorthwindDesktopClientCore.ViewModel
 
             _context = context;
             _emp = employee;
+            _validator = validator;
+
             base.DisplayName = vmDisplayName;
         }
 
@@ -236,7 +239,7 @@ namespace NorthwindDesktopClientCore.ViewModel
         {
             try
             { 
-                if (_emp.IsValid())
+                if (_validator.IsValid())
                 { 
                     if (EmployeeIsNew())
                     { 
@@ -254,7 +257,6 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
             catch (Exception e)
             {
-                //
                 Debug.Print(e.InnerException.Message);
             }
         }

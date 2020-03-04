@@ -8,7 +8,7 @@ using System.Reflection;
 namespace NorthwindDesktopClientCore.Helpers.Validation
 {
     // Добавил валидацию через partial класс. Этот оставил пока что.
-    public static class EmployeeValidator
+    public static class EmployeeValidator2
     {
         /*
         private static readonly string[] ValidatedProperties =
