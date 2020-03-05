@@ -9,18 +9,47 @@
 Объект MainWindowViewModel устанавливается как DataContext главного окна (MainWindow).
 Это происходит на старте приложения, в классе App.xaml.cs, в методе OnStartup.
 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+    В главном окне основа интерфейса составлена из классов ContentControl, ItemsControl
+и TabControl.
+    Content <- ContentControl <- HeaderedContentControl <- TabItem
+    Content <- ItemsControl <- Selector <- TabControl
+
+    ContentControl - суть отображение "single piece of content of any type"
+    ItemsControl - суть отображение коллекции
+    TabControl - отображение коллекции TabItem'ов, которые суть ContentControl с заголовком
+
+    Важнейшее:
+    ContentControl
+        .Content
+        .ContentTemplate
+    ItemsControl
+        .ItemsSource
+        .ItemTemplate
+
+    Шаблоны для обоих контролов - объект класса DataTemplate. Через шаблон данных делается много -
+прибивается UIE к реальным свойствам классов.
+
+    Меню команд слева в главном окне - коллекция команд, поэтому для них используется ItemsControl.
+    Область воркспейсов - коллекция "окон" с заголовком, поэтому TabControl. ContentControl в главном
+окне используется для воркспейсов как корневой класс, чтобы сделать описание TabControl целиком в шаблоне.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 
 
-// Ресурсы
+    * TypeDescriptor (System.ComponentModel) 
+    Использован для проверки, есть ли в классе искомое свойство (ViewModel/ViewModelBase)
 
+    * ObservableCollection (System.Collections.ObjectModel)
+    Коллекция, оповещающая о своем изменении. ViewModel/MainWindowViewModel через нее реализована работа
+с воркспейсами.
+    * NotifyCollectionChangedEventArgs (System.Collection.Specialized)
+    Идет в паре с ObservableCollection, дает коллекцию добавленных и удаленных элементов изменненой коллекции.
 
-// Шаблоны
+    * ReadOnlyCollection (System.Collections.ObjectModel)
 
-
-
-
-ContentControl
-
-ObservableCollection (System.Collections.ObjectModel)
-NotifyCollectionChangedEventArgs (System.Collection.Specialized)
+    * ICollectionView (System.ComponentModel)
+    * CollectionViewSource (System.Windows.Data)
+    ViewModel/MainWindowViewModel - через них сделано делание переданного итема текущим
