@@ -104,7 +104,10 @@ namespace NorthwindDesktopClientCore.ViewModel
         // Непосредственно удаляем окно, которое инициировало свое закрытие, из коллекции Workspace
         private void OnWorkspaceClose(object sender, EventArgs e)
         {
-            Workspace.Remove(sender as ClosableViewModel);
+            var ws = sender as ClosableViewModel;
+            if (ws.UnsavedChanges == true)
+                Debug.Print("Есть несохраненные изменения. Выйти без сохранения?");
+            Workspace.Remove(ws);
         }
 
 

@@ -238,6 +238,8 @@ namespace NorthwindDesktopClientCore.ViewModel
                 SaveAsNewEmployee();
             else
                 UpdateExistingEmployee();
+
+            UnsavedChanges = false;
         }
 
         private void SaveAsNewEmployee()
