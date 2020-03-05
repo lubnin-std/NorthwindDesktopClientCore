@@ -226,7 +226,7 @@ namespace NorthwindDesktopClientCore.ViewModel
         public CommandViewModel SaveCommand {
             get {
                 if (_saveCommand == null)
-                    _saveCommand = new CommandViewModel("Сохранить", new RelayCommand(c => Save()));
+                    _saveCommand = new CommandViewModel("Сохранить", new RelayCommand(c => Save(), p => _emp.IsValid == true));
 
                 return _saveCommand;
             }
@@ -234,9 +234,6 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void Save()
         {
-            if (!_emp.IsValid)
-                return;
-            
             if (IsNewEmployee())
                 SaveAsNewEmployee();
             else
