@@ -6,17 +6,16 @@ using NorthwindDesktopClientCore.Model.Entities;
 using System.Linq;
 using NorthwindDesktopClientCore.Helpers;
 using System.Diagnostics;
-using NorthwindDesktopClientCore.Helpers.Validation;
+using System.ComponentModel;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
-    public class EmployeeViewModel : ClosableViewModel
+    public class EmployeeViewModel : ClosableViewModel, IDataErrorInfo
     {
         private readonly NorthwindDbContext _context;
         private Employees _emp;
         private bool _isSelected;
         private bool _unsavedChanges;
-        private IValidation _validator;
 
         public int EmployeeId {
             get { return _emp.EmployeeId; }
@@ -208,7 +207,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
-        public EmployeeViewModel(Employees employee, NorthwindDbContext context, IValidation validator, string vmDisplayName)
+        public EmployeeViewModel(Employees employee, NorthwindDbContext context, string vmDisplayName)
         {
             if (employee == null)
                 throw new ArgumentNullException("employee");
@@ -218,8 +217,6 @@ namespace NorthwindDesktopClientCore.ViewModel
 
             _context = context;
             _emp = employee;
-            _validator = validator;
-
             base.DisplayName = vmDisplayName;
         }
 
@@ -237,33 +234,49 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void Save()
         {
-            try
-            { 
-                if (_validator.IsValid())
-                { 
-                    if (EmployeeIsNew())
-                    { 
-                        _context.Employees.Add(_emp);
-                        _context.SaveChanges();
-
-                        // После сохранения объекта в БД он получает автоId, который надо сообщить свойству
-                        EmployeeId = _emp.EmployeeId;
-                    }
-                    else
-                    {
-                        _context.SaveChanges();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.Print(e.InnerException.Message);
-            }
+            if (!_emp.IsValid)
+                return;
+            
+            if (IsNewEmployee())
+                SaveAsNewEmployee();
+            else
+                UpdateExistingEmployee();
         }
 
-        private bool EmployeeIsNew()
+        private void SaveAsNewEmployee()
+        {
+            _context.Employees.Add(_emp);
+            _context.SaveChanges();
+            // После сохранения объекта в БД он получает автоId, который надо сразу сообщить свойству,
+            // чтобы Id появился в интерфейсе
+            EmployeeId = _emp.EmployeeId;
+        }
+
+        private void UpdateExistingEmployee()
+        {
+            _context.SaveChanges();
+        }
+
+        private bool IsNewEmployee()
         {
             return _emp.EmployeeId == 0 ? true : false;
+        }
+
+
+        // Реальную валидацию VM делегирует объекту Employees.
+        // Порядок обработки свойств - как они идут в разметке
+        string IDataErrorInfo.Error {
+            get { return (_emp as IDataErrorInfo).Error; }
+        }
+
+        string IDataErrorInfo.this[string propertyName] {
+            get {
+                string error = null;
+
+                error = (_emp as IDataErrorInfo)[propertyName];
+
+                return error;
+            }
         }
     }
 }

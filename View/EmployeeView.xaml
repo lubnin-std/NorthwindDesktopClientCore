@@ -49,12 +49,19 @@
                 />
             <Label Content="Имя: "/>
             <TextBox
-                Text="{Binding Path=FirstName}"
+                x:Name="xFirstName"
+                Text="{Binding Path=FirstName, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="{Binding ElementName=xFirstName, Path=(Validation.Errors).CurrentItem.ErrorContent}"
                 MinWidth="150"
                 />
             <Label Content="Фамилия: "/>
+            <!-- Ключевые моменты в отображении валидации это ValidatesOnDataErrors=True и биндинг в тултипе.
+            Он должен быть именно таким, с указанием имени, заполненном в x:Name 
+            Этот же биндинг можно использовать для отображения ошибки в любом другом элементе интерфейса -->
             <TextBox
-                Text="{Binding Path=LastName}"
+                x:Name="xLastName"
+                Text="{Binding Path=LastName, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="{Binding ElementName=xLastName, Path=(Validation.Errors).CurrentItem.ErrorContent}"
                 MinWidth="150"
                 />
         </StackPanel>

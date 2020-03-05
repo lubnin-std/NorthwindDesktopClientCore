@@ -3,135 +3,93 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 // Имя неймспейса изменено вручную на то, где лежат сгенерированные EF классы сущностей,
 // потому что partial классы должны быть в одном неймспейсе
 namespace NorthwindDesktopClientCore.Model.Entities
 {
-    public partial class Employees
+    public partial class Employees : IDataErrorInfo
     {
-        private  readonly string[] ValidatedProperties =
+        string IDataErrorInfo.Error { get { return null; } }
+
+        string IDataErrorInfo.this[string propertyName] {
+            get { return this.GetValidationError(propertyName); }
+        }
+
+        private static readonly string[] ValidatedProperties =
         {
             "LastName",
-            "FirstName",
-            "Title",
-            "TitleOfCourtesy",
-            "BirthDate",
-            "HireDate",
-            "Address",
-            "City",
-            "Region",
-            "PostalCode",
-            "Country",
-            "HomePhone",
-            "Extension",
-            "ReportsTo"
+            "FirstName"
         };
 
-        public bool IsValid()
-        {
-            foreach (var prop in ValidatedProperties)
-            {
-                ValidateProperty(prop);
+        public bool IsValid { 
+            get {
+                foreach (var property in ValidatedProperties)
+                    if (GetValidationError(property) != null)
+                        return false;
+
+                return true;
             }
-
-            return true;
         }
 
-        private void ValidateProperty(string prop)
+        string GetValidationError(string propertyName)
         {
-            if (Array.IndexOf(ValidatedProperties, prop) < 0)
-                throw new ArgumentException("Property is not in validation list", prop);
+            if (Array.IndexOf(ValidatedProperties, propertyName) < 0)
+                throw new ArgumentException("Property is not in validation list", propertyName);
 
-            if (TypeDescriptor.GetProperties(this)[prop] == null)
-                throw new MissingMemberException("Non exist property in Employees class", prop);
+            if (TypeDescriptor.GetProperties(this)[propertyName] == null)
+                throw new MissingMemberException("Non exist property in Employees class", propertyName);
 
-            string methodName = $"Validate{prop}";
-            // Для вызова  метода такой второй параметр обязателен, без него не работает
+            string methodName = $"Validate{propertyName}";
+            // Для вызова метода такой второй параметр обязателен, без него не работает
             var method = typeof(Employees).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-            method.Invoke(this, null);
+            return (string)method.Invoke(this, null);
         }
 
-
-        private void ValidateLastName()
+        private string ValidateLastName()
         {
+            string err = null;
+
+            if (this.LastName == null)
+                return "Фамилия не заполнена";
+
             int maxLen = 20;
-
             if (TooLong(this.LastName, maxLen))
-                throw new ArgumentException($"LastName must be {maxLen} symbols of less");
+                err += $"Фамилия не может быть длиннее {maxLen} символов\n";
+
+            if (ContainsNonLetters(this.LastName))
+                err += "Фамилия может состоять только из букв\n";
+
+            return err?.Trim();
         }
 
-        private void ValidateFirstName()
+        private string ValidateFirstName()
         {
+            string err = null;
+
+            if (this.FirstName == null)
+                return "Имя не заполнено";
+
             int maxLen = 10;
-
             if (TooLong(this.FirstName, maxLen))
-                throw new ArgumentException($"FirstName must be {maxLen} symbols of less");
+                err += $"Имя не может быть длиннее {maxLen} символов\n";
+
+            if (ContainsNonLetters(this.FirstName))
+                err += "Имя может состоять только из букв\n";
+
+            return err?.Trim();
         }
 
-        private void ValidateTitle()
+        private bool TooLong(string str, int len)
         {
-
+            return str.Length > len;
         }
 
-        private void ValidateTitleOfCourtesy()
+        private bool ContainsNonLetters(string str)
         {
-
-        }
-
-        private  void ValidateBirthDate()
-        {
-
-        }
-
-        private  void ValidateHireDate()
-        {
-
-        }
-
-        private  void ValidateAddress()
-        {
-
-        }
-
-        private  void ValidateCity()
-        {
-
-        }
-
-        private  void ValidateRegion()
-        {
-
-        }
-
-        private  void ValidatePostalCode()
-        {
-
-        }
-
-        private  void ValidateCountry()
-        {
-
-        }
-
-        private  void ValidateHomePhone()
-        {
-
-        }
-
-        private  void ValidateExtension()
-        {
-
-        }
-
-        private  void ValidateReportsTo()
-        {
-
-        }
-
-        private  bool TooLong(string value, int maxLen)
-        {
-            return value.Length > maxLen;
+            //return Regex.IsMatch(str, @"[а-яА-Яa-zA-Z]+");
+            return false;
         }
     }
 }
