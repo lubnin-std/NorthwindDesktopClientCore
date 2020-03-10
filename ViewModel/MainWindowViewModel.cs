@@ -113,13 +113,15 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void ShowAllEmployees()
         {
-
+            var all = new AllEmployeesViewModel(_context, ViewModelNames.AllEmployeesViewModel_DisplayName);
+            Workspace.Add(all);
+            SetActiveWorkspace(all);
         }
 
         private void CreateNewEmployee()
         {
             var emp = new Employees();
-            var vm = new EmployeeViewModel(emp, _context,ViewModelNames.EmployeeViewModel_DisplayName);
+            var vm = new EmployeeViewModel(emp, _context, ViewModelNames.EmployeeViewModel_DisplayName);
             Workspace.Add(vm);
             SetActiveWorkspace(vm);
         }

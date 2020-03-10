@@ -7,6 +7,21 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <ListView
+            ItemsSource="{Binding Path=AllEmployees}"
+            >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn
+                        Header="LastName"
+                        DisplayMemberBinding="{Binding Path=LastName}"
+                        />
+                    <GridViewColumn
+                        Header="FirstName"
+                        DisplayMemberBinding="{Binding Path=FirstName}"
+                        />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </UserControl>
