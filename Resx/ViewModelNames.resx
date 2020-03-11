@@ -118,11 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AllEmployeesViewModel_DisplayName" xml:space="preserve">
-    <value>Сотрудники</value>
+    <value>Все сотрудники</value>
     <comment>Заголовок для VM, которая показывает всех сотрудников</comment>
   </data>
   <data name="EmployeeViewModel_DisplayName" xml:space="preserve">
-    <value>Сотрудник</value>
+    <value>Новый сотрудник</value>
     <comment>Заголовок для VM, которая показывает одного сотрудника</comment>
   </data>
 </root>

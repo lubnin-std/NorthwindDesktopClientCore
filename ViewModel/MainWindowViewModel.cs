@@ -24,6 +24,7 @@ using System.Diagnostics;
 using NorthwindDesktopClientCore.Resx;  // ViewModelNames
 using System.ComponentModel;  // ICollectionView
 using System.Windows.Data;  // CollectionViewSource
+using System.Linq;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -113,8 +114,14 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void ShowAllEmployees()
         {
-            var all = new AllEmployeesViewModel(_context, ViewModelNames.AllEmployeesViewModel_DisplayName);
-            Workspace.Add(all);
+            var all = Workspace.FirstOrDefault(vm => vm is AllEmployeesViewModel) as AllEmployeesViewModel;
+
+            if (all == null)
+            {
+                all = new AllEmployeesViewModel(_context, ViewModelNames.AllEmployeesViewModel_DisplayName);
+                Workspace.Add(all);
+            }
+            
             SetActiveWorkspace(all);
         }
 

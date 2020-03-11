@@ -28,11 +28,12 @@
         VerticalAlignment="Center"
         >
         
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="№ сотрудника: "/>
             <TextBlock 
                 Text="{Binding Path=EmployeeId}"
                 MinWidth="100"
+                VerticalAlignment="Center"
                 />
             <Label Content="Дата найма: "/>
             <DatePicker
@@ -41,7 +42,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="Обращение:"/>
             <TextBox
                 Text="{Binding Path=TitleOfCourtesy}"
@@ -66,7 +67,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="Дата рождения: "/>
             <DatePicker
                 Text="{Binding Path=BirthDate}"
@@ -74,7 +75,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="Должность: "/>
             <TextBox
                 Text="{Binding Path=Title}"
@@ -84,7 +85,7 @@
 
         <!-- Биндинг комбобокса немного хитер: указывается не только коллекция для отображения,
         но и свойство VM, к которому должен прибиваться выбранный итем -->
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="Подчиняется: "/>
             <ComboBox
                 ItemsSource="{Binding Path=ReportsToList, UpdateSourceTrigger=PropertyChanged}"
@@ -94,7 +95,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="Страна: "/>
             <TextBox
                 Text="{Binding Path=Country}"
@@ -107,7 +108,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="0 0 0 15">
             <Label Content="Адрес: "/>
             <TextBox
                 Text="{Binding Path=Address}"
@@ -125,7 +126,7 @@
                 />
         </StackPanel>
 
-        <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Vertical" Margin="0 0 0 10">
             <Label Content="Заметки:"/>
             <TextBox
                 Text="{Binding Path=Notes, UpdateSourceTrigger=PropertyChanged}"
@@ -134,7 +135,10 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Command="{Binding Path=SaveCommand.Command}" Content="{Binding Path=SaveCommand.DisplayName}"/>
+            <Button 
+                Command="{Binding Path=SaveCommand.Command}" 
+                Content="{Binding Path=SaveCommand.DisplayName}"
+                Padding="5"/>
         </StackPanel>
         
     </StackPanel>

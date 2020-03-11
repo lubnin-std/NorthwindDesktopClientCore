@@ -61,7 +61,7 @@ namespace NorthwindDesktopClientCore.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Сотрудники.
+        ///   Looks up a localized string similar to Все сотрудники.
         /// </summary>
         internal static string AllEmployeesViewModel_DisplayName {
             get {
@@ -70,7 +70,7 @@ namespace NorthwindDesktopClientCore.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Сотрудник.
+        ///   Looks up a localized string similar to Новый сотрудник.
         /// </summary>
         internal static string EmployeeViewModel_DisplayName {
             get {
