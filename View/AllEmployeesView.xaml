@@ -6,20 +6,52 @@
              xmlns:local="clr-namespace:NorthwindDesktopClientCore.View"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="BossColumnTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=ReportsToNavigation.LastName, StringFormat='\{0\} '}"/>
+                <TextBlock Text="{Binding Path=ReportsToNavigation.FirstName, StringFormat='\{0\} '}"/>
+                <TextBlock Text="{Binding Path=ReportsToNavigation.EmployeeId, StringFormat='(\{0\})'}"/>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
         <ListView
-            ItemsSource="{Binding Path=AllEmployees}"
-            >
+			ItemsSource="{Binding Path=AllEmployees}"
+			>
             <ListView.View>
                 <GridView>
                     <GridViewColumn
-                        Header="LastName"
-                        DisplayMemberBinding="{Binding Path=LastName}"
-                        />
+						Header="Таб. номер"
+						DisplayMemberBinding="{Binding Path=EmployeeId}"
+						/>
                     <GridViewColumn
-                        Header="FirstName"
-                        DisplayMemberBinding="{Binding Path=FirstName}"
-                        />
+						Header="Обращение"
+						DisplayMemberBinding="{Binding Path=TitleOfCourtesy}"
+						/>
+                    <GridViewColumn
+						Header="LastName"
+						DisplayMemberBinding="{Binding Path=LastName}"
+						/>
+                    <GridViewColumn
+						Header="FirstName"
+						DisplayMemberBinding="{Binding Path=FirstName}"
+						/>
+                    <GridViewColumn
+						Header="Должность"
+						DisplayMemberBinding="{Binding Path=Title}"
+						/>
+                    <GridViewColumn
+						Header="Дата найма"
+						DisplayMemberBinding="{Binding Path=HireDate}"
+						/>
+                    <!-- Биндинг для колонки должен полностью настраиваться в шаблоне -->
+                    <GridViewColumn
+						Header="Начальник"
+                        CellTemplate="{StaticResource BossColumnTemplate}"
+						/>
                 </GridView>
             </ListView.View>
         </ListView>

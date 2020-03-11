@@ -5,6 +5,7 @@ using NorthwindDesktopClientCore.Model.DataContext;
 using NorthwindDesktopClientCore.ViewModel;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -13,10 +14,22 @@ namespace NorthwindDesktopClientCore.ViewModel
         private readonly NorthwindDbContext _context;
         public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
+        public Dictionary<string, string> Columns = new Dictionary<string, string>()
+        {
+            { "EmployeeId", "Табельный №" },
+            { "TitleOfCourtesy", "Обращение" },
+            { "LastName", "Фамилия" },
+            { "FirstName", "Имя" },
+            { "Title", "Должность" },
+            { "HireDate", "Дата найма" },
+            { "ReportsTo", "Подчиняется" }
+        };
+
         public AllEmployeesViewModel(NorthwindDbContext context, string displayName)
         {
             DisplayName = displayName;
             _context = context;
+            //ValidateColumns();
             GetAllEmployees();
         }
 
@@ -27,6 +40,15 @@ namespace NorthwindDesktopClientCore.ViewModel
                  select new EmployeeViewModel(emp, _context, "")).ToList();
 
             AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
+        }
+
+        private void ValidateColumns()
+        {
+            foreach (var c in Columns)
+            {
+                if (typeof(EmployeeViewModel).GetProperty(c.Key) == null)
+                    throw new MissingFieldException($"В классе EmployeesViewModel нет свойства {c.Key}");
+            }
         }
     }
 }

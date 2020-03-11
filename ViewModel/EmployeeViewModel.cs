@@ -180,6 +180,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
+        // Свойство для заполнения ComboBox'а со списком сотрудников
         private IEnumerable<Employees> _empLocal;
         public IEnumerable<Employees> ReportsToList {
             get {
@@ -193,6 +194,13 @@ namespace NorthwindDesktopClientCore.ViewModel
         public Employees ReportsToEmp {
             set {
                 _emp.ReportsTo = value.EmployeeId;
+            }
+        }
+
+        // Объект начальника
+        public Employees ReportsToNavigation {
+            get {
+                return _emp.ReportsToNavigation;
             }
         }
 

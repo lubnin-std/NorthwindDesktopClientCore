@@ -19,12 +19,14 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" MinWidth="150">
-            <ItemsControl
-                ItemsSource="{Binding Path=Commands}"
-                ItemTemplate="{StaticResource CommandsTemplate}"
-                />
-        </Border>
+        <Expander ExpandDirection="Left" IsExpanded="True">
+            <Border Grid.Column="0" MinWidth="150">
+                <ItemsControl
+                    ItemsSource="{Binding Path=Commands}"
+                    ItemTemplate="{StaticResource CommandsTemplate}"
+                    />
+            </Border>
+        </Expander>
 
         <!-- Можно было бы и тут сразу использовать TabControl, ведь воркспейсы -
         суть коллекция итемов и для них логично использовать подкласс ItemsControl.
