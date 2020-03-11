@@ -19,7 +19,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Expander ExpandDirection="Left" IsExpanded="True">
+        <Expander 
+            ExpandDirection="Left" 
+            Style="{StaticResource AutoExpander}"
+            >
             <Border Grid.Column="0" MinWidth="150">
                 <ItemsControl
                     ItemsSource="{Binding Path=Commands}"

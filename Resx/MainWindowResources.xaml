@@ -56,5 +56,17 @@
             ItemTemplate="{StaticResource ClosableTabItemTemplate}"
             />
     </DataTemplate>
+
+    <!-- Меню команд автоматически разворачивается и скрывается при наведении мыши-->
+    <Style TargetType="Expander" x:Key="AutoExpander">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="IsExpanded" Value="True"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="IsExpanded" Value="False"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     
 </ResourceDictionary>
