@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using NorthwindDesktopClientCore.Helpers;
-
+using System.Collections.Specialized;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -45,6 +45,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             _context = context;
             //ValidateColumns();
             GetAllEmployees();
+            AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
 
         private void GetAllEmployees()
@@ -54,6 +55,11 @@ namespace NorthwindDesktopClientCore.ViewModel
                  select new EmployeeViewModel(emp, _context, "")).ToList();
 
             AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
+        }
+
+        private void OnAllEmployeesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged("AllEmployees");
         }
 
         private void ValidateColumns()
@@ -68,18 +74,30 @@ namespace NorthwindDesktopClientCore.ViewModel
         private void DeleteEmployee()
         {
             var selected = AllEmployees.Where(e => e.EmpIsSelected).ToList();
+            DeleteEmployeeFromDatabase(selected);
+            DeleteEmployeeFromCollection(selected);
+        }
+
+        private void DeleteEmployeeFromDatabase(IEnumerable<EmployeeViewModel> selected)
+        {
             foreach (var s in selected)
             {
                 var emp = _context.Employees.FirstOrDefault(e => e.EmployeeId == s.EmployeeId) as Employees;
                 if (emp != null)
                 {
                     _context.Employees.Remove(emp);
-                    AllEmployees.Remove(s);
                 }
             }
 
             _context.SaveChanges();
-            OnPropertyChanged("AllEmployees");
+        }
+
+        private void DeleteEmployeeFromCollection(IEnumerable<EmployeeViewModel> selected)
+        {
+            foreach (var s in selected)
+            {
+                AllEmployees.Remove(s);
+            }
         }
 
     }
