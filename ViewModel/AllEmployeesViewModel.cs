@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using NorthwindDesktopClientCore.Model.DataContext;
+using NorthwindDesktopClientCore.Model.Entities;
 using NorthwindDesktopClientCore.ViewModel;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Input;
+using NorthwindDesktopClientCore.Helpers;
+
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -14,6 +18,7 @@ namespace NorthwindDesktopClientCore.ViewModel
         private readonly NorthwindDbContext _context;
         public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
+        // TODO: сделать, чтобы вкладки формировались динамически, а не описывались вручную в XAML
         public Dictionary<string, string> Columns = new Dictionary<string, string>()
         {
             { "EmployeeId", "Табельный №" },
@@ -24,6 +29,15 @@ namespace NorthwindDesktopClientCore.ViewModel
             { "HireDate", "Дата найма" },
             { "ReportsTo", "Подчиняется" }
         };
+
+        private CommandViewModel _deleteCommand;
+        public CommandViewModel DeleteCommand {
+            get {
+                if (_deleteCommand == null)
+                    _deleteCommand = new CommandViewModel("Удалить", new RelayCommand(c => DeleteEmployee()));
+                return _deleteCommand;
+            }
+        }
 
         public AllEmployeesViewModel(NorthwindDbContext context, string displayName)
         {
@@ -50,5 +64,23 @@ namespace NorthwindDesktopClientCore.ViewModel
                     throw new MissingFieldException($"В классе EmployeesViewModel нет свойства {c.Key}");
             }
         }
+
+        private void DeleteEmployee()
+        {
+            var selected = AllEmployees.Where(e => e.EmpIsSelected).ToList();
+            foreach (var s in selected)
+            {
+                var emp = _context.Employees.FirstOrDefault(e => e.EmployeeId == s.EmployeeId) as Employees;
+                if (emp != null)
+                {
+                    _context.Employees.Remove(emp);
+                    AllEmployees.Remove(s);
+                }
+            }
+
+            _context.SaveChanges();
+            OnPropertyChanged("AllEmployees");
+        }
+
     }
 }

@@ -8,52 +8,61 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="BossColumnTemplate">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=ReportsToNavigation.LastName, StringFormat='\{0\} '}"/>
-                <TextBlock Text="{Binding Path=ReportsToNavigation.FirstName, StringFormat='\{0\} '}"/>
-                <TextBlock Text="{Binding Path=ReportsToNavigation.EmployeeId, StringFormat='(\{0\})'}"/>
-            </StackPanel>
-        </DataTemplate>
+        <ResourceDictionary Source="../Resx/AllEmployeesViewResources.xaml"/>
     </UserControl.Resources>
 
     <Grid>
-        <ListView
-			ItemsSource="{Binding Path=AllEmployees}"
-			>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn
-						Header="Таб. номер"
-						DisplayMemberBinding="{Binding Path=EmployeeId}"
-						/>
-                    <GridViewColumn
-						Header="Обращение"
-						DisplayMemberBinding="{Binding Path=TitleOfCourtesy}"
-						/>
-                    <GridViewColumn
-						Header="LastName"
-						DisplayMemberBinding="{Binding Path=LastName}"
-						/>
-                    <GridViewColumn
-						Header="FirstName"
-						DisplayMemberBinding="{Binding Path=FirstName}"
-						/>
-                    <GridViewColumn
-						Header="Должность"
-						DisplayMemberBinding="{Binding Path=Title}"
-						/>
-                    <GridViewColumn
-						Header="Дата найма"
-						DisplayMemberBinding="{Binding Path=HireDate}"
-						/>
-                    <!-- Биндинг для колонки должен полностью настраиваться в шаблоне -->
-                    <GridViewColumn
-						Header="Начальник"
-                        CellTemplate="{StaticResource BossColumnTemplate}"
-						/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer>
+            <ListView
+			        ItemsSource="{Binding Path=AllEmployees}"
+                    ItemContainerStyle="{StaticResource SelectableListViewItem}"
+			        >
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn
+						        Header="Таб. номер"
+						        DisplayMemberBinding="{Binding Path=EmployeeId}"
+						        />
+                        <GridViewColumn
+						        Header="Обращение"
+						        DisplayMemberBinding="{Binding Path=TitleOfCourtesy}"
+						        />
+                        <GridViewColumn
+						        Header="LastName"
+						        DisplayMemberBinding="{Binding Path=LastName}"
+						        />
+                        <GridViewColumn
+						        Header="FirstName"
+						        DisplayMemberBinding="{Binding Path=FirstName}"
+						        />
+                        <GridViewColumn
+						        Header="Должность"
+						        DisplayMemberBinding="{Binding Path=Title}"
+						        />
+                        <GridViewColumn
+						        Header="Дата найма"
+						        DisplayMemberBinding="{Binding Path=HireDate}"
+						        />
+                        <!-- Биндинг для колонки должен полностью настраиваться в шаблоне -->
+                        <GridViewColumn
+						        Header="Начальник"
+                                CellTemplate="{StaticResource BossColumnTemplate}"
+						        />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </ScrollViewer>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
+            <Button 
+                Command="{Binding Path=DeleteCommand.Command}" 
+                Content="{Binding Path=DeleteCommand.DisplayName}"
+                Padding="5"
+                />
+        </StackPanel>
+        
     </Grid>
 </UserControl>

@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NorthwindDesktopClientCore.Resx">
+    
+    <DataTemplate x:Key="BossColumnTemplate">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Path=ReportsToNavigation.LastName, StringFormat='\{0\} '}"/>
+            <TextBlock Text="{Binding Path=ReportsToNavigation.FirstName, StringFormat='\{0\} '}"/>
+            <TextBlock Text="{Binding Path=ReportsToNavigation.EmployeeId, StringFormat='(\{0\})'}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <!-- Устанавливает самодельное поле EmpIsSelected в vm сотрудника, если он выбран в списке
+    и таким образом из коллекции становится возможным в vm получить графически выбранных сотрудников -->
+    <Style x:Key="SelectableListViewItem" TargetType="ListViewItem">
+        <Setter 
+            Property="IsSelected" 
+            Value="{Binding Path=EmpIsSelected, Mode=TwoWay}"
+            />
+    </Style>
+    
+</ResourceDictionary>

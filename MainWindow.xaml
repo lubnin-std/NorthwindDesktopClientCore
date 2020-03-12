@@ -9,7 +9,7 @@
         Title="MainWindow" Height="800" Width="1200">
 
     <Window.Resources>
-        <ResourceDictionary Source="resx/MainWindowResources.xaml"/>
+        <ResourceDictionary Source="Resx/MainWindowResources.xaml"/>
     </Window.Resources>
     
     <Grid>

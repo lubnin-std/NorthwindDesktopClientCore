@@ -14,7 +14,7 @@ namespace NorthwindDesktopClientCore.ViewModel
     {
         private readonly NorthwindDbContext _context;
         private Employees _emp;
-        private bool _isSelected;
+        private bool _empIsSelected;
         private bool _unsavedChanges;
 
         public int EmployeeId {
@@ -204,14 +204,14 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
-        public bool IsSelected {
-            get { return _isSelected; }
+        public bool EmpIsSelected {
+            get { return _empIsSelected; }
             set {
-                if (_isSelected == value)
+                if (_empIsSelected == value)
                     return;
 
-                _isSelected = value;
-                base.OnPropertyChanged("IsSelected");
+                _empIsSelected = value;
+                base.OnPropertyChanged("EmpIsSelected");
             }
         }
 
