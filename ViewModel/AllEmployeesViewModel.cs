@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Windows.Input;
 using NorthwindDesktopClientCore.Helpers;
 using System.Collections.Specialized;
+using NorthwindDesktopClientCore.Helpers;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -18,16 +19,15 @@ namespace NorthwindDesktopClientCore.ViewModel
         private readonly NorthwindDbContext _context;
         public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
-        // TODO: сделать, чтобы вкладки формировались динамически, а не описывались вручную в XAML
-        public Dictionary<string, string> Columns = new Dictionary<string, string>()
+        public ObservableCollection<Column> Columns { get; } = new ObservableCollection<Column>()
         {
-            { "EmployeeId", "Табельный №" },
-            { "TitleOfCourtesy", "Обращение" },
-            { "LastName", "Фамилия" },
-            { "FirstName", "Имя" },
-            { "Title", "Должность" },
-            { "HireDate", "Дата найма" },
-            { "ReportsTo", "Подчиняется" }
+            new Column("Табельный №", "EmployeeId"),
+            new Column("Обращение", "TitleOfCourtesy"),
+            new Column("Фамилия", "LastName"),
+            new Column("Имя", "FirstName"),
+            new Column("Должность", "Title"),
+            new Column("Дата найма", "HireDate"),
+            //new Column("Подчиняется", "ReportsTo")
         };
 
         private CommandViewModel _deleteCommand;
@@ -43,7 +43,7 @@ namespace NorthwindDesktopClientCore.ViewModel
         {
             DisplayName = displayName;
             _context = context;
-            //ValidateColumns();
+            ValidateColumns();
             GetAllEmployees();
             AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
@@ -66,8 +66,8 @@ namespace NorthwindDesktopClientCore.ViewModel
         {
             foreach (var c in Columns)
             {
-                if (typeof(EmployeeViewModel).GetProperty(c.Key) == null)
-                    throw new MissingFieldException($"В классе EmployeesViewModel нет свойства {c.Key}");
+                if (typeof(EmployeeViewModel).GetProperty(c.DisplayMember) == null)
+                    throw new MissingFieldException($"В классе EmployeesViewModel нет свойства {c.DisplayMember}");
             }
         }
 

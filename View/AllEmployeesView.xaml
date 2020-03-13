@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NorthwindDesktopClientCore.View"
+             xmlns:MagicColumns="clr-namespace:NorthwindDesktopClientCore.Helpers"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -22,37 +23,11 @@
                     ItemContainerStyle="{StaticResource SelectableListViewItem}"
 			        >
                 <ListView.View>
-                    <GridView>
-                        <GridViewColumn
-						        Header="Таб. номер"
-						        DisplayMemberBinding="{Binding Path=EmployeeId}"
-						        />
-                        <GridViewColumn
-						        Header="Обращение"
-						        DisplayMemberBinding="{Binding Path=TitleOfCourtesy}"
-						        />
-                        <GridViewColumn
-						        Header="LastName"
-						        DisplayMemberBinding="{Binding Path=LastName}"
-						        />
-                        <GridViewColumn
-						        Header="FirstName"
-						        DisplayMemberBinding="{Binding Path=FirstName}"
-						        />
-                        <GridViewColumn
-						        Header="Должность"
-						        DisplayMemberBinding="{Binding Path=Title}"
-						        />
-                        <GridViewColumn
-						        Header="Дата найма"
-						        DisplayMemberBinding="{Binding Path=HireDate}"
-						        />
-                        <!-- Биндинг для колонки должен полностью настраиваться в шаблоне -->
-                        <GridViewColumn
-						        Header="Начальник"
-                                CellTemplate="{StaticResource BossColumnTemplate}"
-						        />
-                    </GridView>
+                    <GridView
+                        MagicColumns:GridViewColumns.DisplayMember="DisplayMember"
+                        MagicColumns:GridViewColumns.Header="Header"
+                        MagicColumns:GridViewColumns.ColumnsSource="{Binding Columns}"
+                        />
                 </ListView.View>
             </ListView>
         </ScrollViewer>
