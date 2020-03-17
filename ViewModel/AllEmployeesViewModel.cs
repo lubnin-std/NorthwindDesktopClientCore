@@ -27,7 +27,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             new Column("Имя", "FirstName"),
             new Column("Должность", "Title"),
             new Column("Дата найма", "HireDate"),
-            //new Column("Подчиняется", "ReportsTo")
+            new Column("Подчиняется", "ReportsToNavigation")
         };
 
         private CommandViewModel _deleteCommand;

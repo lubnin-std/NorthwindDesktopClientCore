@@ -24,11 +24,17 @@ namespace NorthwindDesktopClientCore.Helpers
             obj.SetValue(ColumnsSourceProperty, value);
         }
 
+        // По соглашению, любое Dependency Property должно быть public static и заканчиваться словом Property
+        // первый string параметр "ColumnsSource" определяет, как свойство будет писаться в Xaml
         public static readonly DependencyProperty ColumnsSourceProperty =
-            DependencyProperty.RegisterAttached("ColumnsSource", typeof(object), typeof(GridViewColumns), new UIPropertyMetadata(default, SourceChanged));  // new UIPropertyMetadata(default) что это?
+            DependencyProperty.RegisterAttached(
+                "ColumnsSource", 
+                typeof(object), 
+                typeof(GridViewColumns), 
+                new UIPropertyMetadata(default, SourceChanged));
 
 
-        // Какой текст отображать в заголовке
+        // Какой текст отображать в заголовке колонки
         public static string GetHeader(DependencyObject obj)
         {
             return (string)obj.GetValue(HeaderProperty);
@@ -40,7 +46,11 @@ namespace NorthwindDesktopClientCore.Helpers
         }
 
         public static readonly DependencyProperty HeaderProperty =
-            DependencyProperty.RegisterAttached("Header", typeof(string), typeof(GridViewColumns), new UIPropertyMetadata(default));
+            DependencyProperty.RegisterAttached(
+                "Header", 
+                typeof(string), 
+                typeof(GridViewColumns), 
+                new UIPropertyMetadata(default));
 
 
         // Какое свойство объекта данных отображать в колонке
@@ -55,7 +65,11 @@ namespace NorthwindDesktopClientCore.Helpers
         }
 
         public static readonly DependencyProperty DisplayMemberProperty =
-            DependencyProperty.RegisterAttached("DisplayMember", typeof(string), typeof(GridViewColumns), new UIPropertyMetadata(default));
+            DependencyProperty.RegisterAttached(
+                "DisplayMember", 
+                typeof(string), 
+                typeof(GridViewColumns), 
+                new UIPropertyMetadata(default));
 
 
         private static void SourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
