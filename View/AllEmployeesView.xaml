@@ -23,6 +23,11 @@
                     ItemContainerStyle="{StaticResource SelectableListViewItem}"
 			        >
                 <ListView.View>
+                    <GridView
+                        MagicColumns:GridViewColumns.ColumnsSource="{Binding Columns}"
+                        MagicColumns:GridViewColumns.Header="Header"
+                        MagicColumns:GridViewColumns.DisplayMember="DisplayMember"
+                        />
                     <!-- Так выглядит создание колонок вручную
                     <GridView>
                         <GridViewColumn 
@@ -31,11 +36,6 @@
                             />
                     </GridView>
                     -->
-                    <GridView
-                        MagicColumns:GridViewColumns.ColumnsSource="{Binding Columns}"
-                        MagicColumns:GridViewColumns.Header="Header"
-                        MagicColumns:GridViewColumns.DisplayMember="DisplayMember"
-                        />
                 </ListView.View>
             </ListView>
         </ScrollViewer>
