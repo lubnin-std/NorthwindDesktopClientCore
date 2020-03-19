@@ -31,7 +31,11 @@ namespace NorthwindDesktopClientCore.Helpers
                 "ColumnsSource", 
                 typeof(object), 
                 typeof(GridViewColumns), 
-                new UIPropertyMetadata(default, SourceChanged));
+                new UIPropertyMetadata(default, SourceChanged));  // Когда в Xaml создается объект GridView, то начинают
+            // регистрироваться эти свойства зависимостей.
+            // Свойство ColumnsSource="{Binding Columns} прибито к коллекции, содержащей объекты созданного нами типа Column.
+            // Если в этой коллекции есть что-то, хоть даже пустая коллекция (главное, что не null), то срабатывает этот метод SourceChanged,
+            // а через параметр default в него попадает собственно объект GridView, для которого и будут создаваться колонки в этом же методе SourceChanged
 
 
         // Какой текст отображать в заголовке колонки
@@ -72,6 +76,8 @@ namespace NorthwindDesktopClientCore.Helpers
                 new UIPropertyMetadata(default));
 
 
+        // В метод попадает обезличенный объект, который мы пытаемся преобразовать к типу GridView.
+        // e.NewValue - это коллекция как раз с "новыми значениями" - колонками - (состоит из объектов Column)
         private static void SourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             if (obj is GridView gridView)

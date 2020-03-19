@@ -43,16 +43,20 @@ namespace NorthwindDesktopClientCore.ViewModel
         {
             DisplayName = displayName;
             _context = context;
-            ValidateColumns();
+            //ValidateColumns();
             GetAllEmployees();
             AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
 
         private void GetAllEmployees()
         {
-            List<EmployeeViewModel> all = 
+            //List<EmployeeViewModel> all = 
+            //    (from emp in _context.Employees
+            //     select new EmployeeViewModel(emp, _context, "")).ToList();
+            List<EmployeeViewModel> all = new List<EmployeeViewModel>();
+            all.Add(
                 (from emp in _context.Employees
-                 select new EmployeeViewModel(emp, _context, "")).ToList();
+                 select new EmployeeViewModel(emp, _context, "")).First());
 
             AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
         }

@@ -23,6 +23,14 @@
                     ItemContainerStyle="{StaticResource SelectableListViewItem}"
 			        >
                 <ListView.View>
+                    <!-- Так выглядит создание колонок вручную
+                    <GridView>
+                        <GridViewColumn 
+                            Header="Фамилия" 
+                            DisplayMemberBinding="{Binding Path=LastName}" 
+                            />
+                    </GridView>
+                    -->
                     <GridView
                         MagicColumns:GridViewColumns.ColumnsSource="{Binding Columns}"
                         MagicColumns:GridViewColumns.Header="Header"
