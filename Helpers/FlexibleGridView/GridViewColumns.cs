@@ -7,7 +7,7 @@ using System.Windows.Controls;  // GridView
 using System.Windows.Data;  // CollectionViewSource
 using System.Reflection;
 
-namespace NorthwindDesktopClientCore.Helpers
+namespace NorthwindDesktopClientCore.Helpers.FlexibleGridView
 {
     public static class GridViewColumns
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NorthwindDesktopClientCore.Helpers
+namespace NorthwindDesktopClientCore.Helpers.FlexibleGridView
 {
     public class Column
     {

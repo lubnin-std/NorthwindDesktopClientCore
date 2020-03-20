@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Windows.Input;
 using NorthwindDesktopClientCore.Helpers;
 using System.Collections.Specialized;
-using NorthwindDesktopClientCore.Helpers;
+using NorthwindDesktopClientCore.Helpers.FlexibleGridView;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -43,22 +43,25 @@ namespace NorthwindDesktopClientCore.ViewModel
         {
             DisplayName = displayName;
             _context = context;
-            //ValidateColumns();
+            ValidateColumns();
             GetAllEmployees();
             AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
 
         private void GetAllEmployees()
         {
-            //List<EmployeeViewModel> all = 
-            //    (from emp in _context.Employees
-            //     select new EmployeeViewModel(emp, _context, "")).ToList();
-            List<EmployeeViewModel> all = new List<EmployeeViewModel>();
-            all.Add(
+            List<EmployeeViewModel> all =
                 (from emp in _context.Employees
-                 select new EmployeeViewModel(emp, _context, "")).First());
+                 select new EmployeeViewModel(emp, _context, "")).ToList();
 
             AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
+
+            //EmployeeViewModel all =
+            //    (from emp in _context.Employees
+            //     select new EmployeeViewModel(emp, _context, "")).First();
+
+            //AllEmployees = new ObservableCollection<EmployeeViewModel>();
+            //AllEmployees.Add(all);
         }
 
         private void OnAllEmployeesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
