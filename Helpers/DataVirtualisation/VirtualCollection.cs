@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
 {
-    public class VirtualCollection<T> : IList<T>, IList
+    public class VirtualCollection<T> : ObservableCollection<T>//, IList<T>, IList
     {
-        #region VirtualCollection<T> part
+        #region VirtualCollection<T>
         public VirtualCollection(IItemsProvider<T> itemsProvider)
         {
             ItemsProvider = itemsProvider;
@@ -33,7 +34,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
         private readonly Dictionary<int, DateTime> _pageTouchTimes = new Dictionary<int, DateTime>();
 
         private int _count = -1;
-        public virtual int Count {
+        public new virtual int Count {
             get {
                 if (_count == -1)
                     LoadCount();
@@ -54,7 +55,8 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
             return ItemsProvider.FetchCount();
         }
 
-        public T this[int index] {
+        //public T this[int index] {
+        public new T this[int index] {
             get {
                 // Определить номер страницы и смещение внутри страницы
                 int pageIndex = index / PageSize;
@@ -82,10 +84,10 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
             set { throw new NotSupportedException(); }
         }
 
-        object IList.this[int index] {
-            get { return this[index]; }
-            set { throw new NotSupportedException(); }
-        }
+        //object IList.this[int index] {
+        //    get { return this[index]; }
+        //    set { throw new NotSupportedException(); }
+        //}
 
         protected virtual void RequestPage(int pageIndex)
         {
@@ -136,10 +138,11 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
         }
         #endregion
 
-
+        
         // 99% функционала типичной коллекции не относится к назначению класса и поэтому не поддерживается
         #region Заглушки для функционала обычной коллекции
-        public IEnumerator<T> GetEnumerator()
+        
+        public new IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
             {
@@ -147,11 +150,12 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        //IEnumerator IEnumerable.GetEnumerator()
+        //{
+        //    return GetEnumerator();
+        //}
 
+        /*
         public void Add(T item)
         {
             throw new NotSupportedException();
@@ -237,6 +241,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
         public bool IsFixedSize {
             get { return false; }
         }
+        */
         #endregion
     }
 }
