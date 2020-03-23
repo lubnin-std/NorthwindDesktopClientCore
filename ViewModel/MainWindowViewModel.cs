@@ -26,8 +26,6 @@ using System.ComponentModel;  // ICollectionView
 using System.Windows.Data;  // CollectionViewSource
 using System.Linq;
 
-using NorthwindDesktopClientCore.Model.EFsExt;
-
 namespace NorthwindDesktopClientCore.ViewModel
 {
     // У Джоша Смита она была WorkspaceViewModel, потому что он вешал в старте App
@@ -73,8 +71,8 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         public MainWindowViewModel()
         {
-            //_context = new NorthwindDbContext();
-            _context = new NorthwindDbContextVirtual();
+            _context = new NorthwindDbContext();
+            //_context = new NorthwindDbContextVirtual();
         }
 
 

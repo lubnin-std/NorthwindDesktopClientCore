@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace NorthwindDesktopClientCore.Helpers.DataVirtualisation
+namespace NorthwindDesktopClientCore.Model.DataVirtualization
 {
     public class VirtualCollection<T> : ObservableCollection<T>//, IList<T>, IList
     {
