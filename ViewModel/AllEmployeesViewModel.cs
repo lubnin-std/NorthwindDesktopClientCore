@@ -11,12 +11,14 @@ using System.Windows.Input;
 using NorthwindDesktopClientCore.Helpers;
 using System.Collections.Specialized;
 using NorthwindDesktopClientCore.Helpers.FlexibleGridView;
+using NorthwindDesktopClientCore.Model;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
     public class AllEmployeesViewModel : ClosableViewModel
     {
         private readonly NorthwindDbContext _context;
+        private readonly DataProvider _data;
         public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
         public ObservableCollection<Column> Columns { get; } = new ObservableCollection<Column>()
@@ -46,6 +48,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             ValidateColumns();
             GetAllEmployees();
             AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
+            _data = new DataProvider(context);
         }
 
         private void GetAllEmployees()

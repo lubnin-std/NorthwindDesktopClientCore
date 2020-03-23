@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using NorthwindDesktopClientCore.Model.DataContext;
 using NorthwindDesktopClientCore.Model.Entities;
-using NorthwindDesktopClientCore.Model.DataVirtualization;
+using NorthwindDesktopClientCore.Helpers.DataVirtualization;
 using System.Linq;
 
 namespace NorthwindDesktopClientCore.Model

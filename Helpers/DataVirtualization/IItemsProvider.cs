@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NorthwindDesktopClientCore.Model.DataVirtualization
+namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
     public interface IItemsProvider<T>
     {
