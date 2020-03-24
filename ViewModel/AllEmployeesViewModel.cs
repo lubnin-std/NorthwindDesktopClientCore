@@ -43,16 +43,18 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         public AllEmployeesViewModel(NorthwindDbContext context, string displayName)
         {
+            _data = new DataProvider(context);
             DisplayName = displayName;
             _context = context;
             ValidateColumns();
             GetAllEmployees();
             AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
-            _data = new DataProvider(context);
         }
 
         private void GetAllEmployees()
         {
+            var empCnt = _data.FetchCount<Employees>();
+
             List<EmployeeViewModel> all =
                 (from emp in _context.Employees
                  select new EmployeeViewModel(emp, _context, "")).Take(150).ToList();

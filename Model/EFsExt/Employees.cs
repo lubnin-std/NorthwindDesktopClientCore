@@ -33,6 +33,11 @@ namespace NorthwindDesktopClientCore.Model.Entities
             }
         }
 
+        // Перенести сюда этот флаг из ViewModel невозможно, потому что EF будет пытаться найти в таблице БД
+        // поле EmpIsSelected, конечно же не найдет его там и выдаст ошибку
+        //public bool EmpIsSelected { get; set; }
+
+
         string GetValidationError(string propertyName)
         {
             if (Array.IndexOf(ValidatedProperties, propertyName) < 0)
