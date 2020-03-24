@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
@@ -13,7 +14,7 @@ namespace NorthwindDesktopClientCore.Model
 {
     public class DataProvider
     {
-        private NorthwindDbContext Context { get; }
+        public NorthwindDbContext Context { get; }
 
         public DataProvider(DbContext context)
         {
@@ -26,9 +27,10 @@ namespace NorthwindDesktopClientCore.Model
 
         public IItemsProvider<T> GetItemsProvider<T>()
         {
-            return null;
+            return new ItemsProvider<T>(Context);
         }
 
+        // Мб сделать этот класс private?
         public class ItemsProvider<T> : IItemsProvider<T>
         {
             private NorthwindDbContext _context;
@@ -37,6 +39,19 @@ namespace NorthwindDesktopClientCore.Model
             {
                 _context = context;
             }
+
+            public int FetchCount<T>() where T : class
+            {
+                return _context.Set<T>().Count();
+            }
+
+            public IEnumerable<T> FetchRange<T>(int startIndex, int count) where T : class
+            {
+                return _context.Set<T>().Skip(startIndex).Take(count);
+            }
+
+            // Выбор количества - интересное решение через рефлексию
+            //
             // Метод Count - это статический метод класса Queryable, а не DbSet'а, поэтому искать его
             // нужно именно в Queryable. Там их два, в данном случае нужен тот, что с одним параметром.
             // Это дженерик-метод, поэтому надо сообщить ему тип, с которым он будет работать.
@@ -48,7 +63,7 @@ namespace NorthwindDesktopClientCore.Model
             //
             // В конце вызываем этот метод. Поскольку он статический, первый параметр null, а второй -
             // источник записей, т.е., например, значение свойства Context.Employees, коим является DbSet<Employees>   
-            public int FetchCount<T>()
+            private int FetchCountViaReflection<T>()
             {
                 MethodInfo countMethod = typeof(Queryable)
                     .GetMethods()
@@ -59,21 +74,14 @@ namespace NorthwindDesktopClientCore.Model
                 var dbSet = _context.GetType().GetProperty(typeof(T).Name).GetValue(_context);
                 return (int)countMethod.Invoke(null, new object[] { dbSet });
             }
-
-            public ObservableCollection<T> FetchRange<T>(int startIndex, int count)
-            {
-                return null;
-            }
         }
+
+
 
         
 
+        
 
-
-        public IEnumerable<Employees> GetEmployees()
-        {
-            return Context.Employees.OrderBy(e => e.EmployeeId).Take(150).ToList();
-        }
 
         public Employees GetNewEmployee()
         {

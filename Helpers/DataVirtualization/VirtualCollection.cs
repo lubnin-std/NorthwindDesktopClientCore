@@ -6,242 +6,245 @@ using System.Text;
 
 namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
-    public class VirtualCollection<T> : ObservableCollection<T>//, IList<T>, IList
+    public class VirtualCollection<T> //: ObservableCollection<T>//, IList<T>, IList
     {
-        #region VirtualCollection<T>
-        public VirtualCollection(IItemsProvider<T> itemsProvider)
-        {
-            ItemsProvider = itemsProvider;
-        }
 
-        public VirtualCollection(IItemsProvider<T> itemsProvider, int pageSize)
-            : this(itemsProvider)
-        {
-            PageSize = pageSize;
-        }
+        //#region VirtualCollection<T>
+        //public VirtualCollection(IItemsProvider<T> itemsProvider)
+        //{
+        //    ItemsProvider = itemsProvider;
+        //}
 
-        public VirtualCollection(IItemsProvider<T> itemsProvider, int pageSize, long pageTimeout)
-            : this(itemsProvider, pageSize)
-        {
-            PageTimeout = pageTimeout;
-        }
+        //public VirtualCollection(IItemsProvider<T> itemsProvider, int pageSize)
+        //    : this(itemsProvider)
+        //{
+        //    PageSize = pageSize;
+        //}
 
-        public IItemsProvider<T> ItemsProvider { get; }
-        public int PageSize { get; } = 30;
-        public long PageTimeout { get; } = 10000;
+        //public VirtualCollection(IItemsProvider<T> itemsProvider, int pageSize, long pageTimeout)
+        //    : this(itemsProvider, pageSize)
+        //{
+        //    PageTimeout = pageTimeout;
+        //}
 
-        private readonly Dictionary<int, IList<T>> _pages = new Dictionary<int, IList<T>>();
-        private readonly Dictionary<int, DateTime> _pageTouchTimes = new Dictionary<int, DateTime>();
+        //public IItemsProvider<T> ItemsProvider { get; }
+        //public int PageSize { get; } = 30;
+        //public long PageTimeout { get; } = 10000;
 
-        private int _count = -1;
-        public new virtual int Count {
-            get {
-                if (_count == -1)
-                    LoadCount();
-                return _count;
-            }
-            protected set {
-                _count = value;
-            }
-        }
+        //private readonly Dictionary<int, IList<T>> _pages = new Dictionary<int, IList<T>>();
+        //private readonly Dictionary<int, DateTime> _pageTouchTimes = new Dictionary<int, DateTime>();
 
-        protected virtual void LoadCount()
-        {
-            Count = FetchCount();
-        }
+        //private int _count = -1;
+        //public new virtual int Count {
+        //    get {
+        //        if (_count == -1)
+        //            LoadCount();
+        //        return _count;
+        //    }
+        //    protected set {
+        //        _count = value;
+        //    }
+        //}
 
-        protected int FetchCount()
-        {
-            return ItemsProvider.FetchCount();
-        }
+        //protected virtual void LoadCount()
+        //{
+        //    Count = FetchCount();
+        //}
 
-        //public T this[int index] {
-        public new T this[int index] {
-            get {
-                // Определить номер страницы и смещение внутри страницы
-                int pageIndex = index / PageSize;
-                int pageOffset = index % PageSize;
+        //protected int FetchCount()
+        //{
+        //    //return ItemsProvider.FetchCount();
+        //    return -1;
+        //}
 
-                // Запросить основную страницу
-                RequestPage(pageIndex);
+        ////public T this[int index] {
+        //public new T this[int index] {
+        //    get {
+        //        // Определить номер страницы и смещение внутри страницы
+        //        int pageIndex = index / PageSize;
+        //        int pageOffset = index % PageSize;
 
-                // Если страницу уже пролистали на + или -50%, запросить след\предыдущую
-                if (pageOffset > PageSize/2 && pageIndex < Count / PageSize)
-                    RequestPage(pageIndex + 1);
-                if (pageOffset < PageSize/2 && pageIndex > 0)
-                    RequestPage(pageIndex - 1);
+        //        // Запросить основную страницу
+        //        RequestPage(pageIndex);
 
-                // Удалить страницы, к которым долгое время не обращались
-                CleanUpPages();
+        //        // Если страницу уже пролистали на + или -50%, запросить след\предыдущую
+        //        if (pageOffset > PageSize/2 && pageIndex < Count / PageSize)
+        //            RequestPage(pageIndex + 1);
+        //        if (pageOffset < PageSize/2 && pageIndex > 0)
+        //            RequestPage(pageIndex - 1);
 
-                // Защитная проверка в случае асинхронной загрузки
-                if (_pages[pageIndex] == null)
-                    return default(T);
+        //        // Удалить страницы, к которым долгое время не обращались
+        //        CleanUpPages();
 
-                // Вернуть запрошенный элемент данных
-                return _pages[pageIndex][pageOffset];
-            }
-            set { throw new NotSupportedException(); }
-        }
+        //        // Защитная проверка в случае асинхронной загрузки
+        //        if (_pages[pageIndex] == null)
+        //            return default(T);
 
-        //object IList.this[int index] {
-        //    get { return this[index]; }
+        //        // Вернуть запрошенный элемент данных
+        //        return _pages[pageIndex][pageOffset];
+        //    }
         //    set { throw new NotSupportedException(); }
         //}
 
-        protected virtual void RequestPage(int pageIndex)
-        {
-            if (!_pages.ContainsKey(pageIndex))
-            {
-                _pages.Add(pageIndex, null);
-                _pageTouchTimes.Add(pageIndex, DateTime.Now);
-                LoadPage(pageIndex);
-            }
-            else
-            {
-                _pageTouchTimes[pageIndex] = DateTime.Now;
-            }
-        }
+        ////object IList.this[int index] {
+        ////    get { return this[index]; }
+        ////    set { throw new NotSupportedException(); }
+        ////}
 
-        protected virtual void LoadPage(int pageIndex)
-        {
-            PopulatePage(pageIndex, FetchPage(pageIndex));
-        }
-
-        protected virtual void PopulatePage(int pageIndex, IList<T> page)
-        {
-            if (_pages.ContainsKey(pageIndex))
-                _pages[pageIndex] = page;
-        }
-
-        protected IList<T> FetchPage(int pageIndex)
-        {
-            return ItemsProvider.FetchRange(pageIndex * PageSize, PageSize);
-        }
-
-        public void CleanUpPages()
-        {
-            List<int> pageIndexes = new List<int>(_pageTouchTimes.Keys);
-            foreach (int pi in pageIndexes)
-            {
-                // Контрол ItemsControl часто обращается к первому элементу коллекции
-                // Это особенность Wpf, поэтому трогать первую страницу не будем
-                if (pi != 0)
-                {
-                    if ((DateTime.Now - _pageTouchTimes[pi]).TotalMilliseconds > PageTimeout)
-                    {
-                        _pages.Remove(pi);
-                        _pageTouchTimes.Remove(pi);
-                    }
-                }
-            }
-        }
-        #endregion
-
-        
-        // 99% функционала типичной коллекции не относится к назначению класса и поэтому не поддерживается
-        #region Заглушки для функционала обычной коллекции
-        
-        public new IEnumerator<T> GetEnumerator()
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                yield return this[i];
-            }
-        }
-
-        //IEnumerator IEnumerable.GetEnumerator()
+        //protected virtual void RequestPage(int pageIndex)
         //{
-        //    return GetEnumerator();
+        //    if (!_pages.ContainsKey(pageIndex))
+        //    {
+        //        _pages.Add(pageIndex, null);
+        //        _pageTouchTimes.Add(pageIndex, DateTime.Now);
+        //        LoadPage(pageIndex);
+        //    }
+        //    else
+        //    {
+        //        _pageTouchTimes[pageIndex] = DateTime.Now;
+        //    }
         //}
 
-        /*
-        public void Add(T item)
-        {
-            throw new NotSupportedException();
-        }
+        //protected virtual void LoadPage(int pageIndex)
+        //{
+        //    PopulatePage(pageIndex, FetchPage(pageIndex));
+        //}
 
-        int IList.Add(object value)
-        {
-            throw new NotSupportedException();
-        }
+        //protected virtual void PopulatePage(int pageIndex, IList<T> page)
+        //{
+        //    if (_pages.ContainsKey(pageIndex))
+        //        _pages[pageIndex] = page;
+        //}
 
-        bool IList.Contains(object value)
-        {
-            return Contains((T)value);
-        }
+        //protected IList<T> FetchPage(int pageIndex)
+        //{
+        //    //return ItemsProvider.FetchRange(pageIndex * PageSize, PageSize);
+        //    return null;
+        //}
 
-        public bool Contains(T item)
-        {
-            return false;
-        }
+        //public void CleanUpPages()
+        //{
+        //    List<int> pageIndexes = new List<int>(_pageTouchTimes.Keys);
+        //    foreach (int pi in pageIndexes)
+        //    {
+        //        // Контрол ItemsControl часто обращается к первому элементу коллекции
+        //        // Это особенность Wpf, поэтому трогать первую страницу не будем
+        //        if (pi != 0)
+        //        {
+        //            if ((DateTime.Now - _pageTouchTimes[pi]).TotalMilliseconds > PageTimeout)
+        //            {
+        //                _pages.Remove(pi);
+        //                _pageTouchTimes.Remove(pi);
+        //            }
+        //        }
+        //    }
+        //}
+        //#endregion
 
-        public void Clear()
-        {
-            throw new NotSupportedException();
-        }
+        
+        //// 99% функционала типичной коллекции не относится к назначению класса и поэтому не поддерживается
+        //#region Заглушки для функционала обычной коллекции
+        
+        //public new IEnumerator<T> GetEnumerator()
+        //{
+        //    for (int i = 0; i < Count; i++)
+        //    {
+        //        yield return this[i];
+        //    }
+        //}
 
-        int IList.IndexOf(object value)
-        {
-            return IndexOf((T)value);
-        }
+        ////IEnumerator IEnumerable.GetEnumerator()
+        ////{
+        ////    return GetEnumerator();
+        ////}
 
-        public int IndexOf(T item)
-        {
-            return -1;
-        }
+        ///*
+        //public void Add(T item)
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        public void Insert(int index, T item)
-        {
-            throw new NotSupportedException();
-        }
+        //int IList.Add(object value)
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        void IList.Insert(int index, object value)
-        {
-            Insert(index, (T)value);
-        }
+        //bool IList.Contains(object value)
+        //{
+        //    return Contains((T)value);
+        //}
 
-        public void RemoveAt(int index)
-        {
-            throw new NotSupportedException();
-        }
+        //public bool Contains(T item)
+        //{
+        //    return false;
+        //}
 
-        void IList.Remove(object value)
-        {
-            throw new NotSupportedException();
-        }
+        //public void Clear()
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        public bool Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
+        //int IList.IndexOf(object value)
+        //{
+        //    return IndexOf((T)value);
+        //}
 
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            throw new NotSupportedException();
-        }
+        //public int IndexOf(T item)
+        //{
+        //    return -1;
+        //}
 
-        void ICollection.CopyTo(Array array, int index)
-        {
-            throw new NotSupportedException();
-        }
+        //public void Insert(int index, T item)
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        public object SyncRoot {
-            get { return this; }
-        }
+        //void IList.Insert(int index, object value)
+        //{
+        //    Insert(index, (T)value);
+        //}
 
-        public bool IsSynchronized {
-            get { return false; }
-        }
+        //public void RemoveAt(int index)
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        public bool IsReadOnly {
-            get { return true; }
-        }
+        //void IList.Remove(object value)
+        //{
+        //    throw new NotSupportedException();
+        //}
 
-        public bool IsFixedSize {
-            get { return false; }
-        }
-        */
-        #endregion
+        //public bool Remove(T item)
+        //{
+        //    throw new NotSupportedException();
+        //}
+
+        //public void CopyTo(T[] array, int arrayIndex)
+        //{
+        //    throw new NotSupportedException();
+        //}
+
+        //void ICollection.CopyTo(Array array, int index)
+        //{
+        //    throw new NotSupportedException();
+        //}
+
+        //public object SyncRoot {
+        //    get { return this; }
+        //}
+
+        //public bool IsSynchronized {
+        //    get { return false; }
+        //}
+
+        //public bool IsReadOnly {
+        //    get { return true; }
+        //}
+
+        //public bool IsFixedSize {
+        //    get { return false; }
+        //}
+        //*/
+        //#endregion
     }
 }

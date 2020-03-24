@@ -53,7 +53,9 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void GetAllEmployees()
         {
-            var empCnt = _data.FetchCount<Employees>();
+            //var empCnt = _data.FetchCount<Employees>();
+            //var emps = _data.FetchRange<Employees>(10, 5);
+            //var emps2 = _data.Context.Employees.Skip(10).Take(5);
 
             List<EmployeeViewModel> all =
                 (from emp in _context.Employees
