@@ -7,10 +7,9 @@ using System.Diagnostics;
 
 namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
-    public class VirtualCollection<T> : IList<T>, IList where T : class //ObservableCollection<T>, IList<T>, IList where T : class
+    public class VirtualCollection<T> : //ObservableCollection<T>, IList<T> where T : class
+        ObservableCollection<T>, IList<T>, IList where T : class //IList<T>, IList where T : class
     {
-
-        #region VirtualCollection<T>
         public VirtualCollection(IItemsProvider<T> itemsProvider)
         {
             ItemsProvider = itemsProvider;
@@ -36,7 +35,6 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
         private readonly Dictionary<int, DateTime> _pageTouchTimes = new Dictionary<int, DateTime>();
 
         private int _count = -1;
-        //public new virtual int Count {
         public new int Count {
             get {
                 if (_count == -1)
@@ -48,18 +46,12 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             }
         }
 
-        //protected virtual void LoadCount()
-        //{
-        //    Count = FetchCount();
-        //}
-
         protected int FetchCount()
         {
             return ItemsProvider.FetchCount();
         }
 
-        public T this[int index] {
-        //public new T this[int index] {
+        public new T this[int index] {
             get {
                 // Определить номер страницы и позицию элемента относительно начала страницы
                 int pageIndex = index / PageSize;
@@ -93,6 +85,20 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             get { return this[index]; }
             set { throw new NotSupportedException(); }
         }
+
+        public new IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return this[i];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
 
         protected void RequestPage(int pageIndex)
         {
@@ -154,113 +160,5 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
                 }
             }
         }
-        #endregion
-
-
-        // 99% функционала типичной коллекции не относится к назначению класса и поэтому не поддерживается
-        #region Заглушки для функционала обычной коллекции
-
-        //public new IEnumerator<T> GetEnumerator()
-        public IEnumerator<T> GetEnumerator()
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                yield return this[i];
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-//        /*
-        public void Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        int IList.Add(object value)
-        {
-            throw new NotSupportedException();
-        }
-
-        bool IList.Contains(object value)
-        {
-            return Contains((T)value);
-        }
-
-        public bool Contains(T item)
-        {
-            return false;
-        }
-
-        public void Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        int IList.IndexOf(object value)
-        {
-            return IndexOf((T)value);
-        }
-
-        public int IndexOf(T item)
-        {
-            return -1;
-        }
-
-        public void Insert(int index, T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IList.Insert(int index, object value)
-        {
-            Insert(index, (T)value);
-        }
-
-        public void RemoveAt(int index)
-        {
-            throw new NotSupportedException();
-        }
-
-        void IList.Remove(object value)
-        {
-            throw new NotSupportedException();
-        }
-
-        public bool Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            throw new NotSupportedException();
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            throw new NotSupportedException();
-        }
-
-        public object SyncRoot {
-            get { return this; }
-        }
-
-        public bool IsSynchronized {
-            get { return false; }
-        }
-
-        public bool IsReadOnly {
-            get { return true; }
-        }
-
-        public bool IsFixedSize {
-            get { return false; }
-        }
-//        */
-        #endregion
     }
 }
