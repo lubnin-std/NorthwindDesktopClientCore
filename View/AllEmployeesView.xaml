@@ -11,17 +11,16 @@
     <UserControl.Resources>
         <ResourceDictionary Source="../Resx/AllEmployeesViewResources.xaml"/>
     </UserControl.Resources>
-
+    <!--ItemContainerStyle="{StaticResource SelectableListViewItem}"-->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ScrollViewer>
-            <ListView
-			        ItemsSource="{Binding Path=AllEmployees}"
-                    ItemContainerStyle="{StaticResource SelectableListViewItem}"
-			        >
+        <!--<ScrollViewer> помещение ListView в ScrollViewer блокировало виртуализацию UI для ListView-->
+            <ListView 
+                ItemsSource="{Binding Path=AllEmployees}"
+                >
                 <ListView.View>
                     <GridView
                         MagicColumns:GridViewColumns.ColumnsSource="{Binding Columns}"
@@ -38,7 +37,7 @@
                     -->
                 </ListView.View>
             </ListView>
-        </ScrollViewer>
+        <!--</ScrollViewer>-->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
             <Button 
                 Command="{Binding Path=DeleteCommand.Command}" 

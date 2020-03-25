@@ -12,6 +12,7 @@ using NorthwindDesktopClientCore.Helpers;
 using System.Collections.Specialized;
 using NorthwindDesktopClientCore.Helpers.FlexibleGridView;
 using NorthwindDesktopClientCore.Model;
+using NorthwindDesktopClientCore.Helpers.DataVirtualization;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -19,7 +20,8 @@ namespace NorthwindDesktopClientCore.ViewModel
     {
         private readonly NorthwindDbContext _context;
         private readonly DataProvider _data;
-        public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
+        //public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
+        public VirtualCollection<Employees> AllEmployees { get; private set; }
 
         public ObservableCollection<Column> Columns { get; } = new ObservableCollection<Column>()
         {
@@ -48,16 +50,23 @@ namespace NorthwindDesktopClientCore.ViewModel
             _context = context;
             ValidateColumns();
             GetAllEmployees();
-            AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
+            //AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
 
         private void GetAllEmployees()
         {
-            List<EmployeeViewModel> all =
-                (from emp in _context.Employees
-                 select new EmployeeViewModel(emp, _context, "")).Take(150).ToList();
+            //var ip = _data.GetItemsProvider<Employees>();
+            //var emps = ip.FetchRange(30, 5);
+            //var emp = emps[3];
 
-            AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
+            AllEmployees = new VirtualCollection<Employees>(_data.GetItemsProvider<Employees>());
+            //var emp = AllEmployees[5];
+
+            //List<EmployeeViewModel> all =
+            //    (from emp in _context.Employees
+            //     select new EmployeeViewModel(emp, _context, "")).Take(150).ToList();
+
+            //AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
         }
 
         private void OnAllEmployeesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -76,31 +85,33 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void DeleteEmployee()
         {
-            var selected = AllEmployees.Where(e => e.EmpIsSelected).ToList();
-            DeleteEmployeeFromDatabase(selected);
-            DeleteEmployeeFromCollection(selected);
+            //var selected = AllEmployees.Where(e => e.EmpIsSelected).ToList();
+            //// TODO: Если из бд не удалится по какой-то причине, надо об этом сообщить, чтобы из коллекции тоже не удалялось.
+            //// Либо после удаления из бд инициировать перезагрузку коллекции.
+            //DeleteEmployeeFromDatabase(selected);
+            //DeleteEmployeeFromCollection(selected);
         }
 
         private void DeleteEmployeeFromDatabase(IEnumerable<EmployeeViewModel> selected)
         {
-            foreach (var s in selected)
-            {
-                var emp = _context.Employees.FirstOrDefault(e => e.EmployeeId == s.EmployeeId) as Employees;
-                if (emp != null)
-                {
-                    _context.Employees.Remove(emp);
-                }
-            }
+            //foreach (var s in selected)
+            //{
+            //    var emp = _context.Employees.FirstOrDefault(e => e.EmployeeId == s.EmployeeId) as Employees;
+            //    if (emp != null)
+            //    {
+            //        _context.Employees.Remove(emp);
+            //    }
+            //}
 
-            _context.SaveChanges();
+            //_context.SaveChanges();
         }
 
         private void DeleteEmployeeFromCollection(IEnumerable<EmployeeViewModel> selected)
         {
-            foreach (var s in selected)
-            {
-                AllEmployees.Remove(s);
-            }
+            //foreach (var s in selected)
+            //{
+            //    AllEmployees.Remove(s);
+            //}
         }
 
     }

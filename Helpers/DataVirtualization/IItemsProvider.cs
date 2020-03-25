@@ -8,6 +8,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
     public interface IItemsProvider<T> where T : class
     {
         public int FetchCount();
-        IEnumerable<T> FetchRange(int startIndex, int count);
+        // Должен возвращать IList, потому что к элементу страницы будет доступ по индексу
+        IList<T> FetchRange(int startIndex, int count);
     }
 }

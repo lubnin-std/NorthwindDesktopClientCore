@@ -30,8 +30,7 @@ namespace NorthwindDesktopClientCore.Model
             return new ItemsProvider<T>(Context);
         }
 
-        // Мб сделать этот класс private?
-        public class ItemsProvider<T> : IItemsProvider<T> where T : class
+        private class ItemsProvider<T> : IItemsProvider<T> where T : class
         {
             private NorthwindDbContext _context;
 
@@ -45,9 +44,9 @@ namespace NorthwindDesktopClientCore.Model
                 return _context.Set<T>().Count();
             }
 
-            public IEnumerable<T> FetchRange(int startIndex, int count)
+            public IList<T> FetchRange(int startIndex, int count)
             {
-                return _context.Set<T>().Skip(startIndex).Take(count);
+                return _context.Set<T>().Skip(startIndex).Take(count).ToList();
             }
 
             // Выбор количества - интересное решение через рефлексию
