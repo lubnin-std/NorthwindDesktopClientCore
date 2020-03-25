@@ -25,13 +25,13 @@ namespace NorthwindDesktopClientCore.Model
         }
 
 
-        public IItemsProvider<T> GetItemsProvider<T>()
+        public IItemsProvider<T> GetItemsProvider<T>() where T : class
         {
             return new ItemsProvider<T>(Context);
         }
 
         // Мб сделать этот класс private?
-        public class ItemsProvider<T> : IItemsProvider<T>
+        public class ItemsProvider<T> : IItemsProvider<T> where T : class
         {
             private NorthwindDbContext _context;
 
@@ -40,12 +40,12 @@ namespace NorthwindDesktopClientCore.Model
                 _context = context;
             }
 
-            public int FetchCount<T>() where T : class
+            public int FetchCount()
             {
                 return _context.Set<T>().Count();
             }
 
-            public IEnumerable<T> FetchRange<T>(int startIndex, int count) where T : class
+            public IEnumerable<T> FetchRange(int startIndex, int count)
             {
                 return _context.Set<T>().Skip(startIndex).Take(count);
             }

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
-    public interface IItemsProvider<T>
+    public interface IItemsProvider<T> where T : class
     {
-        public int FetchCount<T>() where T : class;
-        IEnumerable<T> FetchRange<T>(int startIndex, int count) where T : class;
+        public int FetchCount();
+        IEnumerable<T> FetchRange(int startIndex, int count);
     }
 }
