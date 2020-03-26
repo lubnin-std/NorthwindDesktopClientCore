@@ -9,6 +9,10 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
     public class VirtualCollection<T> : ObservableCollection<T>, IList<T>, IList where T : class
     {
+        public IItemsProvider<T> ItemsProvider { get; }
+        public int PageSize { get; } = 30;
+        public long PageTimeout { get; } = 10_000;  // Милисекунды, 1000ms = 1s
+
         public VirtualCollection(IItemsProvider<T> itemsProvider)
         {
             ItemsProvider = itemsProvider;
@@ -25,19 +29,6 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
         {
             PageTimeout = pageTimeout;
         }
-
-        public IItemsProvider<T> ItemsProvider { get; }
-        public int PageSize { get; } = 30;
-        public long PageTimeout { get; } = 10_000;  // Милисекунды, 1000ms = 1s
-
-        private class Page
-        {
-            public int Index { get; set; }
-            public IList<T> Items { get; set; }
-            public DateTime LastAccessTime { get; set; }
-            public double Timeout => (DateTime.Now - LastAccessTime).TotalMilliseconds;
-        }
-        private readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();
 
         private int _count = -1;
         public new int Count {
@@ -75,24 +66,35 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
         }
 
 
+
+        private readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();
+        private class Page
+        {
+            public int Index { get; set; }
+            public IList<T> Items { get; set; }
+            public DateTime LastAccessTime { get; set; }
+            public double Timeout => (DateTime.Now - LastAccessTime).TotalMilliseconds;
+        }
+
         private T FetchItem(int index)
         {
-            // Определить номер страницы и позицию элемента относительно начала страницы
+            // Определить номер "основной" страницы - на которой находится запрашиваемый элемент,
+            // и его позицию относительно начала страницы
             int pageIndex = index / PageSize;
             int pageOffset = index % PageSize;
 
             // Запросить основную страницу
             RequestPage(pageIndex);
 
-            // Если страницу уже пролистали на + или -50%, запросить след\предыдущую
-            // && защита от загрузки страницы с номером maxНомер+1
-            if (pageOffset > PageSize / 2 && pageIndex < Count / PageSize)
+            // Если страницу уже наполовину пролистали, запросить след\предыдущую
+            // && защита от загрузки страницы с номером max\minНомер+-1
+            if (pageOffset > PageSize/2 && pageIndex < Count/PageSize)
                 RequestPage(pageIndex + 1);
-            if (pageOffset < PageSize / 2 && pageIndex > 0)
+            if (pageOffset < PageSize/2 && pageIndex > 0)
                 RequestPage(pageIndex - 1);
 
             // Удалить страницы, к которым долгое время не обращались
-            CleanUpPages();
+            RemoveUnusedPages();
 
             // Защитная проверка в случае асинхронной загрузки
             if (_pages[pageIndex] == null)
@@ -143,7 +145,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             return ItemsProvider.FetchRange(pageIndex * PageSize, PageSize);
         }
 
-        public void CleanUpPages()
+        public void RemoveUnusedPages()
         {
             foreach (var page in _pages.Values)
             {
