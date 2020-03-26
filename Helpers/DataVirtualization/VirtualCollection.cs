@@ -36,7 +36,6 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             public IList<T> Items { get; set; }
             public DateTime LastAccessTime { get; set; }
             public double Timeout => (DateTime.Now - LastAccessTime).TotalMilliseconds;
-            public T GetItem(int offset) => Items[offset];
         }
         private readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();
 
@@ -101,7 +100,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 
             // Вернуть запрошенный элемент данных
             // Такой доступ через [pageOffset] требует от набора данных страницы иметь индексатор
-            return _pages[pageIndex].GetItem(pageOffset);
+            return _pages[pageIndex].Items[pageOffset];
         }
 
 
@@ -137,7 +136,6 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
                 Items = FetchPage(pageIndex)
             };
             _pages.Add(pageIndex, page);
-            Debug.Print("Page #{0} created", pageIndex);
         }
 
         private IList<T> FetchPage(int pageIndex)
@@ -155,7 +153,6 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
                 {
                     if (page.Timeout > PageTimeout)
                     {
-                        Debug.Print("Page #{0} deleted", page.Index);
                         _pages.Remove(page.Index);
                     }
                 }
