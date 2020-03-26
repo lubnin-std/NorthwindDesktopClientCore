@@ -7,8 +7,7 @@ using System.Diagnostics;
 
 namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
-    public class VirtualCollection<T> : //ObservableCollection<T>, IList<T> where T : class
-        ObservableCollection<T>, IList<T>, IList where T : class //IList<T>, IList where T : class
+    public class VirtualCollection<T> : ObservableCollection<T>, IList<T>, IList where T : class
     {
         public VirtualCollection(IItemsProvider<T> itemsProvider)
         {
@@ -31,14 +30,21 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
         public int PageSize { get; } = 30;
         public long PageTimeout { get; } = 10_000;  // Милисекунды, 1000ms = 1s
 
-        private readonly Dictionary<int, IList<T>> _pages = new Dictionary<int, IList<T>>();
-        private readonly Dictionary<int, DateTime> _pageTouchTimes = new Dictionary<int, DateTime>();
+        private class Page
+        {
+            public int Index { get; set; }
+            public IList<T> Items { get; set; }
+            public DateTime LastAccessTime { get; set; }
+            public double Timeout => (DateTime.Now - LastAccessTime).TotalMilliseconds;
+            public T GetItem(int offset) => Items[offset];
+        }
+        private readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();
 
         private int _count = -1;
         public new int Count {
             get {
                 if (_count == -1)
-                    _count = FetchCount();
+                    _count = ItemsProvider.FetchCount();
                 return _count;
             }
             protected set {
@@ -46,38 +52,8 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             }
         }
 
-        protected int FetchCount()
-        {
-            return ItemsProvider.FetchCount();
-        }
-
         public new T this[int index] {
-            get {
-                // Определить номер страницы и позицию элемента относительно начала страницы
-                int pageIndex = index / PageSize;
-                int pageOffset = index % PageSize;
-
-                // Запросить основную страницу
-                RequestPage(pageIndex);
-
-                // Если страницу уже пролистали на + или -50%, запросить след\предыдущую
-                // && защита от загрузки страницы с номером maxНомер+1
-                if (pageOffset > PageSize / 2 && pageIndex < Count / PageSize)
-                    RequestPage(pageIndex + 1);
-                if (pageOffset < PageSize / 2 && pageIndex > 0)
-                    RequestPage(pageIndex - 1);
-
-                // Удалить страницы, к которым долгое время не обращались
-                CleanUpPages();
-
-                // Защитная проверка в случае асинхронной загрузки
-                if (_pages[pageIndex] == null)
-                    return default(T);
-
-                // Вернуть запрошенный элемент данных
-                // Такой доступ через [pageOffset] требует от набора данных страницы иметь индексатор
-                return _pages[pageIndex][pageOffset];
-            }
+            get { return FetchItem(index); }
             set { throw new NotSupportedException(); }
         }
 
@@ -100,14 +76,43 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
         }
 
 
+        private T FetchItem(int index)
+        {
+            // Определить номер страницы и позицию элемента относительно начала страницы
+            int pageIndex = index / PageSize;
+            int pageOffset = index % PageSize;
+
+            // Запросить основную страницу
+            RequestPage(pageIndex);
+
+            // Если страницу уже пролистали на + или -50%, запросить след\предыдущую
+            // && защита от загрузки страницы с номером maxНомер+1
+            if (pageOffset > PageSize / 2 && pageIndex < Count / PageSize)
+                RequestPage(pageIndex + 1);
+            if (pageOffset < PageSize / 2 && pageIndex > 0)
+                RequestPage(pageIndex - 1);
+
+            // Удалить страницы, к которым долгое время не обращались
+            CleanUpPages();
+
+            // Защитная проверка в случае асинхронной загрузки
+            if (_pages[pageIndex] == null)
+                return default(T);
+
+            // Вернуть запрошенный элемент данных
+            // Такой доступ через [pageOffset] требует от набора данных страницы иметь индексатор
+            return _pages[pageIndex].GetItem(pageOffset);
+        }
+
+
         protected void RequestPage(int pageIndex)
         {
             if (PageExists(pageIndex))
-            { 
+            {
                 UpdatePageAccessTime(pageIndex);
             }
             else
-            { 
+            {
                 CreatePage(pageIndex);
             }
         }
@@ -119,22 +124,20 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 
         private void UpdatePageAccessTime(int pageIndex)
         {
-            _pageTouchTimes[pageIndex] = DateTime.Now;
+            Page page = _pages[pageIndex];
+            page.LastAccessTime = DateTime.Now;
         }
 
         private void CreatePage(int pageIndex)
         {
-            _pages.Add(pageIndex, null);
-            _pageTouchTimes.Add(pageIndex, DateTime.Now);
-            
-            PopulatePage(pageIndex, FetchPage(pageIndex));
+            var page = new Page()
+            {
+                Index = pageIndex,
+                LastAccessTime = DateTime.Now,
+                Items = FetchPage(pageIndex)
+            };
+            _pages.Add(pageIndex, page);
             Debug.Print("Page #{0} created", pageIndex);
-        }
-
-        protected void PopulatePage(int pageIndex, IList<T> data)
-        {
-            if (PageExists(pageIndex))
-                _pages[pageIndex] = data;
         }
 
         private IList<T> FetchPage(int pageIndex)
@@ -144,18 +147,16 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 
         public void CleanUpPages()
         {
-            var pageIndexes = new List<int>(_pageTouchTimes.Keys);
-            foreach (int pi in pageIndexes)
+            foreach (var page in _pages.Values)
             {
                 // Контрол ItemsControl часто обращается к первому элементу коллекции
                 // Это особенность Wpf, поэтому трогать первую страницу не будем
-                if (pi != 0)
+                if (page.Index != 0)
                 {
-                    if ((DateTime.Now - _pageTouchTimes[pi]).TotalMilliseconds > PageTimeout)
+                    if (page.Timeout > PageTimeout)
                     {
-                        _pages.Remove(pi);
-                        _pageTouchTimes.Remove(pi);
-                        Debug.Print("Page #{0} deleted", pi);
+                        Debug.Print("Page #{0} deleted", page.Index);
+                        _pages.Remove(page.Index);
                     }
                 }
             }
