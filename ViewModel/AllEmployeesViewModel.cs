@@ -13,14 +13,15 @@ using System.Collections.Specialized;
 using NorthwindDesktopClientCore.Helpers.FlexibleGridView;
 using NorthwindDesktopClientCore.Model;
 using NorthwindDesktopClientCore.Helpers.DataVirtualization;
+using NorthwindDesktopClientCore.ViewModel.VMProviders;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
     public class AllEmployeesViewModel : ClosableViewModel
     {
-        private readonly NorthwindDbContext _context;
-        private readonly DataProvider _data;
-        //public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
+        private EmployeesManager _empManager;
+        private IItemsProvider<EmployeeViewModel> _empVmProvider;
+
         public VirtualCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
         public ObservableCollection<Column> Columns { get; } = new ObservableCollection<Column>()
@@ -43,26 +44,21 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
-        public AllEmployeesViewModel(NorthwindDbContext context, string displayName)
+        public AllEmployeesViewModel(EmployeesManager employeesManager, string displayName)
         {
-            _data = new DataProvider(context);
+            _empManager = employeesManager;
+            _empVmProvider = new EmployeeVmItemsProvider(_empManager);
             DisplayName = displayName;
-            _context = context;
+
             ValidateColumns();
             GetAllEmployees();
+
             AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
 
         private void GetAllEmployees()
         {
-            //AllEmployees = new VirtualCollection<Employees>(_data.GetItemsProvider<Employees>());
-            AllEmployees = new VirtualCollection<EmployeeViewModel>(_data.GetItemsProvider<EmployeeViewModel>());
-
-            //List<EmployeeViewModel> all =
-            //    (from emp in _context.Employees
-            //     select new EmployeeViewModel(emp, _context, "")).Take(150).ToList();
-
-            //AllEmployees = new ObservableCollection<EmployeeViewModel>(all);
+            AllEmployees = new VirtualCollection<EmployeeViewModel>(_empVmProvider);
         }
 
         private void OnAllEmployeesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

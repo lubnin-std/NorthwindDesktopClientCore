@@ -218,11 +218,11 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
-        public EmployeeViewModel(EmployeesManager employeesManager, string vmDisplayName)
+        public EmployeeViewModel(Employees employee, EmployeesManager employeesManager, string vmDisplayName)
         {
             _empManager = employeesManager;
 
-            _emp = _empManager.GetNewEmployee();
+            _emp = employee;
             base.DisplayName = vmDisplayName;
         }
 

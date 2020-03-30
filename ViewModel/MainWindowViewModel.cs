@@ -120,7 +120,10 @@ namespace NorthwindDesktopClientCore.ViewModel
 
             if (all == null)
             {
-                all = new AllEmployeesViewModel(_context, ViewModelNames.AllEmployeesViewModel_DisplayName);
+                var empItemsProvider = new ItemsProvider<Employees>(_context);
+                var empManager = new EmployeesManager(_context, empItemsProvider);
+
+                all = new AllEmployeesViewModel(empManager, ViewModelNames.AllEmployeesViewModel_DisplayName);
                 Workspace.Add(all);
             }
             
@@ -131,7 +134,9 @@ namespace NorthwindDesktopClientCore.ViewModel
         {
             var empItemsProvider = new ItemsProvider<Employees>(_context);
             var empManager = new EmployeesManager(_context, empItemsProvider);
-            var vm = new EmployeeViewModel(empManager, ViewModelNames.EmployeeViewModel_DisplayName);
+            var employee = empManager.GetNewEmployee();
+
+            var vm = new EmployeeViewModel(employee, empManager, ViewModelNames.EmployeeViewModel_DisplayName);
             Workspace.Add(vm);
             SetActiveWorkspace(vm);
         }
