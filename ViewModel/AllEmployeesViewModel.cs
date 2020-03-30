@@ -21,7 +21,7 @@ namespace NorthwindDesktopClientCore.ViewModel
         private readonly NorthwindDbContext _context;
         private readonly DataProvider _data;
         //public ObservableCollection<EmployeeViewModel> AllEmployees { get; private set; }
-        public VirtualCollection<Employees> AllEmployees { get; private set; }
+        public VirtualCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
         public ObservableCollection<Column> Columns { get; } = new ObservableCollection<Column>()
         {
@@ -50,17 +50,13 @@ namespace NorthwindDesktopClientCore.ViewModel
             _context = context;
             ValidateColumns();
             GetAllEmployees();
-            //AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
+            AllEmployees.CollectionChanged += OnAllEmployeesCollectionChanged;
         }
 
         private void GetAllEmployees()
         {
-            //var ip = _data.GetItemsProvider<Employees>();
-            //var emps = ip.FetchRange(30, 5);
-            //var emp = emps[3];
-
-            AllEmployees = new VirtualCollection<Employees>(_data.GetItemsProvider<Employees>());
-            //var emp = AllEmployees[5];
+            //AllEmployees = new VirtualCollection<Employees>(_data.GetItemsProvider<Employees>());
+            AllEmployees = new VirtualCollection<EmployeeViewModel>(_data.GetItemsProvider<EmployeeViewModel>());
 
             //List<EmployeeViewModel> all =
             //    (from emp in _context.Employees

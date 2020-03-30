@@ -10,9 +10,7 @@ namespace NorthwindDesktopClientCore
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            var window = new MainWindow();
-            window.DataContext = new MainWindowViewModel();
-            window.Show();
+            new MainWindow() { DataContext = new MainWindowViewModel() }.Show();
         }
     }
 }

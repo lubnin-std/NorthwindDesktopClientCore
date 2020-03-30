@@ -101,7 +101,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
                 return default(T);
 
             // Вернуть запрошенный элемент данных
-            // Такой доступ через [pageOffset] требует от набора данных страницы иметь индексатор
+            // Такой доступ через [pageOffset] требует от набора данных страницы иметь индексатор, т.е. быть IList
             return _pages[pageIndex].Items[pageOffset];
         }
 

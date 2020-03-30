@@ -19,6 +19,7 @@ using System.Collections.ObjectModel;  // ReadOnlyCollection, ObservableCollecti
 using NorthwindDesktopClientCore.Model.DataContext;
 using NorthwindDesktopClientCore.Helpers;
 using NorthwindDesktopClientCore.Model.Entities;
+using NorthwindDesktopClientCore.Model;
 using System.Collections.Specialized;  // NotifyCollectionChangedEventArgs
 using System.Diagnostics;
 using NorthwindDesktopClientCore.Resx;  // ViewModelNames
@@ -128,8 +129,9 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void CreateNewEmployee()
         {
-            var emp = new Employees();
-            var vm = new EmployeeViewModel(emp, _context, ViewModelNames.EmployeeViewModel_DisplayName);
+            var empItemsProvider = new ItemsProvider<Employees>(_context);
+            var empManager = new EmployeesManager(_context, empItemsProvider);
+            var vm = new EmployeeViewModel(empManager, ViewModelNames.EmployeeViewModel_DisplayName);
             Workspace.Add(vm);
             SetActiveWorkspace(vm);
         }

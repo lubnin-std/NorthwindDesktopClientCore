@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using NorthwindDesktopClientCore.Model.DataContext;
 using NorthwindDesktopClientCore.Model.Entities;
-using System.Linq;
 using NorthwindDesktopClientCore.Helpers;
-using System.Diagnostics;
 using System.ComponentModel;
+using NorthwindDesktopClientCore.Model;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
     public class EmployeeViewModel : ClosableViewModel, IDataErrorInfo
     {
-        private readonly NorthwindDbContext _context;
         private Employees _emp;
         private bool _empIsSelected;
         private bool _unsavedChanges;
+        private EmployeesManager _empManager;
 
+
+        // TODO: сделать событие изменения значения свойства через [CallerMemberName] как у VladD
+        // https://ru.stackoverflow.com/questions/615927/wpf-%d0%a2%d0%b0%d0%b1%d0%bb%d0%b8%d1%86%d0%b0-xaml/616413#616413
         public int EmployeeId {
             get { return _emp.EmployeeId; }
             // Когда сотрудник сохраняется в БД и получает автоId, оно сразу записывается в это поле,
@@ -185,7 +185,10 @@ namespace NorthwindDesktopClientCore.ViewModel
         public IEnumerable<Employees> ReportsToList {
             get {
                 if (_empLocal == null)
-                    _empLocal = _context.Employees.ToList();
+                    // TODO: Когда в базе десятки тысяч сотрудников, такой метод больше не подходит
+                    // Сделать через модальное окно
+                    //_empLocal = _context.Employees.ToList();
+                    _empLocal = null;
 
                 return _empLocal;
             }
@@ -215,16 +218,11 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
-        public EmployeeViewModel(Employees employee, NorthwindDbContext context, string vmDisplayName)
+        public EmployeeViewModel(EmployeesManager employeesManager, string vmDisplayName)
         {
-            if (employee == null)
-                throw new ArgumentNullException("employee");
+            _empManager = employeesManager;
 
-            if (context == null)
-                throw new ArgumentNullException("context");
-
-            _context = context;
-            _emp = employee;
+            _emp = _empManager.GetNewEmployee();
             base.DisplayName = vmDisplayName;
         }
 
@@ -242,36 +240,16 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void Save()
         {
-            if (IsNewEmployee())
-                SaveAsNewEmployee();
-            else
-                UpdateExistingEmployee();
-
+            _empManager.SaveEmployee(_emp);
+            this.EmployeeId = _emp.EmployeeId;
             UnsavedChanges = false;
         }
 
-        private void SaveAsNewEmployee()
-        {
-            _context.Employees.Add(_emp);
-            _context.SaveChanges();
-            // После сохранения объекта в БД он получает автоId, который надо сразу сообщить свойству,
-            // чтобы Id появился в интерфейсе
-            EmployeeId = _emp.EmployeeId;
-        }
-
-        private void UpdateExistingEmployee()
-        {
-            _context.SaveChanges();
-        }
-
-        private bool IsNewEmployee()
-        {
-            return _emp.EmployeeId == 0 ? true : false;
-        }
-
-
+        
         // Реальную валидацию VM делегирует объекту Employees.
         // Порядок обработки свойств - как они идут в разметке
+        // TODO: подумать над переносом валидации в отдельный класс и формировании детального
+        // списка ошибок для каждого поля.
         string IDataErrorInfo.Error {
             get { return (_emp as IDataErrorInfo).Error; }
         }
