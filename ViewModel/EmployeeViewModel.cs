@@ -10,7 +10,6 @@ namespace NorthwindDesktopClientCore.ViewModel
     public class EmployeeViewModel : ClosableViewModel, IDataErrorInfo
     {
         private Employees _emp;
-        private bool _empIsSelected;
         private bool _unsavedChanges;
         private EmployeesManager _empManager;
 
@@ -207,6 +206,7 @@ namespace NorthwindDesktopClientCore.ViewModel
             }
         }
 
+        private bool _empIsSelected;
         public bool EmpIsSelected {
             get { return _empIsSelected; }
             set {

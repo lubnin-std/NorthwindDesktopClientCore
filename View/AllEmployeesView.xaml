@@ -11,15 +11,20 @@
     <UserControl.Resources>
         <ResourceDictionary Source="../Resx/AllEmployeesViewResources.xaml"/>
     </UserControl.Resources>
-    <!--ItemContainerStyle="{StaticResource SelectableListViewItem}"-->
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <!--<ScrollViewer> помещение ListView в ScrollViewer блокировало виртуализацию UI для ListView-->
+        <!--<ScrollViewer> помещение ListView в ScrollViewer блокировало виртуализацию UI для ListView
+        UPD. Потому что ScrollViewer имеет два режима прокрутки - поэлементный и попиксельный. При втором
+        виртуализация отключается. Так что требуется CanContentScroll=true чтобы виртуализация работа.
+        Но ListView имеет собственный скроллер, так что внешний не нужен -->
             <ListView 
+                Style="{StaticResource VirtualListView}"
                 ItemsSource="{Binding Path=AllEmployees}"
+                ItemContainerStyle="{StaticResource SelectableListViewItem}"
                 >
                 <ListView.View>
                     <GridView

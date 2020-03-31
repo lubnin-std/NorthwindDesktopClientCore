@@ -20,8 +20,14 @@
     </Style>
 
     <Style x:Key="VirtualListView" TargetType="{x:Type ListView}">
+        <!-- Поддерживает ли контрол виртуализацию, определяется панелью, которую он использует.
+        Но даже те контролы, которые используют "правильную" панель, не всегда по умолчанию включают
+        режим виртуализации. Поэтому ручная установка этого свойства в true убирает сомнения -->
         <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
+        <!-- Уже созданные графические контейнеры элементов не удаляются после ухода из области видимости,
+        а используются для отображения новых данных -->
         <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
+        <!-- Видимые элементы обновляются только когда пользователь отпускает ползунок -->
         <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True"/>
     </Style>
     

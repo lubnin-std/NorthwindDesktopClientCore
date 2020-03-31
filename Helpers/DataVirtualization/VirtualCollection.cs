@@ -65,6 +65,10 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             return GetEnumerator();
         }
 
+        public bool IsReadOnly {
+            get { return true; }
+        }
+
 
 
         private readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();

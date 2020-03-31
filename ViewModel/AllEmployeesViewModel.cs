@@ -77,7 +77,7 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void DeleteEmployee()
         {
-            //var selected = AllEmployees.Where(e => e.EmpIsSelected).ToList();
+            var selected = AllEmployees.Where(e => e.EmpIsSelected).ToList();
             //// TODO: Если из бд не удалится по какой-то причине, надо об этом сообщить, чтобы из коллекции тоже не удалялось.
             //// Либо после удаления из бд инициировать перезагрузку коллекции.
             //DeleteEmployeeFromDatabase(selected);
