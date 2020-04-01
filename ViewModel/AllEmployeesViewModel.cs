@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using NorthwindDesktopClientCore.Model.DataContext;
-using NorthwindDesktopClientCore.Model.Entities;
-using NorthwindDesktopClientCore.ViewModel;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
-using System.Windows.Input;
 using NorthwindDesktopClientCore.Helpers;
 using System.Collections.Specialized;
 using NorthwindDesktopClientCore.Helpers.FlexibleGridView;
@@ -22,7 +16,7 @@ namespace NorthwindDesktopClientCore.ViewModel
         private EmployeesManager _empManager;
         private IItemsProvider<EmployeeViewModel> _empVmProvider;
 
-        public VirtualCollection<EmployeeViewModel> AllEmployees { get; private set; }
+        public AsyncVirtualCollection<EmployeeViewModel> AllEmployees { get; private set; }
 
         public ObservableCollection<Column> Columns { get; } = new ObservableCollection<Column>()
         {
@@ -58,7 +52,7 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         private void GetAllEmployees()
         {
-            AllEmployees = new VirtualCollection<EmployeeViewModel>(_empVmProvider);
+            AllEmployees = new AsyncVirtualCollection<EmployeeViewModel>(_empVmProvider);
         }
 
         private void OnAllEmployeesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

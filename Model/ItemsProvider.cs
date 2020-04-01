@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using NorthwindDesktopClientCore.Model.DataContext;
 using NorthwindDesktopClientCore.Helpers.DataVirtualization;
 using System.Reflection;

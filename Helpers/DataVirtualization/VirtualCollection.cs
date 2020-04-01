@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using System.Diagnostics;
 
 namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 {
@@ -101,7 +99,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             RemoveUnusedPages();
 
             // Защитная проверка в случае асинхронной загрузки
-            if (_pages[pageIndex] == null)
+            if (!_pages.ContainsKey(pageIndex))
                 return default(T);
 
             // Вернуть запрошенный элемент данных
@@ -109,9 +107,14 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             return _pages[pageIndex].Items[pageOffset];
         }
 
+        protected int FetchCount()
+        {
+            return ItemsProvider.FetchCount();
+        }
+
         protected virtual void LoadCount()
         {
-            Count = ItemsProvider.FetchCount();
+            Count = FetchCount();
         }
 
 
@@ -154,9 +157,14 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             _pages.Add(pageIndex, page);
         }
 
+        protected IList<T> FetchRange(int startIndex, int count)
+        {
+            return ItemsProvider.FetchRange(startIndex, count);
+        }
+
         protected IList<T> FetchPage(int pageIndex)
         {
-            return ItemsProvider.FetchRange(pageIndex * PageSize, PageSize);
+            return FetchRange(pageIndex * PageSize, PageSize);
         }
 
         protected void RemoveUnusedPages()

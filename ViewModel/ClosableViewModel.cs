@@ -13,8 +13,6 @@
 //---------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NorthwindDesktopClientCore.Helpers;  // RelayCommand
 using System.Windows.Input;  // ICommand
 

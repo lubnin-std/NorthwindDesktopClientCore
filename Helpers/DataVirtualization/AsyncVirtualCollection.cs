@@ -57,7 +57,52 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 
         protected override void LoadCount()
         {
-            
+            if (IsLoading)
+                return;
+
+            Count = 0;
+            IsLoading = true;
+            ThreadPool.QueueUserWorkItem(LoadCountWork);
+        }
+
+        private void LoadCountWork(object args)
+        {
+            int count = FetchCount();
+            SynchronizationContext.Send(LoadCountCompleted, count);
+        }
+
+        private void LoadCountCompleted(object args)
+        {
+            Count = (int)args;
+            IsLoading = false;
+            FireCollectionReset();
+        }
+
+        protected override void LoadPage(int pageIndex)
+        {
+            if (IsLoading)
+                return;
+
+            IsLoading = true;
+            ThreadPool.QueueUserWorkItem(LoadPageWork, pageIndex);
+        }
+
+        private void LoadPageWork(object args)
+        {
+            int pageIndex = (int)args;
+            IList<T> pageData = FetchPage(pageIndex);
+            SynchronizationContext.Send(LoadPageCompleted, new object[] { pageIndex, pageData });
+        }
+
+        private void LoadPageCompleted(object args)
+        {
+            var responce = (object[])args;
+            int pageIndex = (int)responce[0];
+            var pageData = (IList<T>)responce[1];
+
+            IsLoading = false;
+            CreatePage(pageIndex, pageData);
+            FireCollectionReset();
         }
     }
 }
