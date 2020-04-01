@@ -34,7 +34,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
         public new int Count {
             get {
                 if (_count == -1)
-                    _count = ItemsProvider.FetchCount();
+                    LoadCount();
                 return _count;
             }
             protected set {
@@ -71,8 +71,8 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
 
 
 
-        private readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();
-        private class Page
+        protected readonly Dictionary<int, Page> _pages = new Dictionary<int, Page>();
+        protected class Page
         {
             public int Index { get; set; }
             public IList<T> Items { get; set; }
@@ -80,7 +80,7 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             public double Timeout => (DateTime.Now - LastAccessTime).TotalMilliseconds;
         }
 
-        private T FetchItem(int index)
+        protected T FetchItem(int index)
         {
             // Определить номер "основной" страницы - на которой находится запрашиваемый элемент,
             // и его позицию относительно начала страницы
@@ -109,6 +109,11 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             return _pages[pageIndex].Items[pageOffset];
         }
 
+        protected virtual void LoadCount()
+        {
+            Count = ItemsProvider.FetchCount();
+        }
+
 
         protected void RequestPage(int pageIndex)
         {
@@ -118,38 +123,43 @@ namespace NorthwindDesktopClientCore.Helpers.DataVirtualization
             }
             else
             {
-                CreatePage(pageIndex);
+                LoadPage(pageIndex);
             }
         }
 
-        private bool PageExists(int pageIndex)
+        protected virtual void LoadPage(int pageIndex)
+        {
+            CreatePage(pageIndex, FetchPage(pageIndex));
+        }
+
+        protected bool PageExists(int pageIndex)
         {
             return _pages.ContainsKey(pageIndex);
         }
 
-        private void UpdatePageAccessTime(int pageIndex)
+        protected void UpdatePageAccessTime(int pageIndex)
         {
             Page page = _pages[pageIndex];
             page.LastAccessTime = DateTime.Now;
         }
 
-        private void CreatePage(int pageIndex)
+        protected void CreatePage(int pageIndex, IList<T> pageData)
         {
             var page = new Page()
             {
                 Index = pageIndex,
                 LastAccessTime = DateTime.Now,
-                Items = FetchPage(pageIndex)
+                Items = pageData
             };
             _pages.Add(pageIndex, page);
         }
 
-        private IList<T> FetchPage(int pageIndex)
+        protected IList<T> FetchPage(int pageIndex)
         {
             return ItemsProvider.FetchRange(pageIndex * PageSize, PageSize);
         }
 
-        public void RemoveUnusedPages()
+        protected void RemoveUnusedPages()
         {
             foreach (var page in _pages.Values)
             {

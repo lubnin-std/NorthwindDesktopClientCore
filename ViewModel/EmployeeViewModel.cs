@@ -14,8 +14,6 @@ namespace NorthwindDesktopClientCore.ViewModel
         private EmployeesManager _empManager;
 
 
-        // TODO: сделать событие изменения значения свойства через [CallerMemberName] как у VladD
-        // https://ru.stackoverflow.com/questions/615927/wpf-%d0%a2%d0%b0%d0%b1%d0%bb%d0%b8%d1%86%d0%b0-xaml/616413#616413
         public int EmployeeId {
             get { return _emp.EmployeeId; }
             // Когда сотрудник сохраняется в БД и получает автоId, оно сразу записывается в это поле,
