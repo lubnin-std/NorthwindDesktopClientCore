@@ -82,7 +82,8 @@ namespace NorthwindDesktopClientCore.ViewModel
             return new List<CommandViewModel>()
             {
                 new CommandViewModel("Список сотрудников", new RelayCommand(с => ShowAllEmployees())),
-                new CommandViewModel("Создать сотрудника", new RelayCommand(c => CreateNewEmployee()))
+                new CommandViewModel("Создать сотрудника", new RelayCommand(c => CreateNewEmployee())),
+                new CommandViewModel("Список партнеров", new RelayCommand(c => ShowAllCustomers()))
             };
         }
 
@@ -127,6 +128,20 @@ namespace NorthwindDesktopClientCore.ViewModel
                 Workspace.Add(all);
             }
             
+            SetActiveWorkspace(all);
+        }
+
+        private void ShowAllCustomers()
+        {
+            var all = Workspace.FirstOrDefault(vm => vm is AllCustomersViewModel) as AllCustomersViewModel;
+
+            if (all == null)
+            {
+                var manager = new CustomersManager(_context);
+                all = new AllCustomersViewModel(manager);
+                Workspace.Add(all);
+            }
+
             SetActiveWorkspace(all);
         }
 

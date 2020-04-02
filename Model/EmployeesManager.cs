@@ -30,11 +30,6 @@ namespace NorthwindDesktopClientCore.Model
             return _empProvider.FetchRange(startIndex, count);
         }
 
-        public IItemsProvider<Employees> GetEmployeesProvider()
-        {
-            return new ItemsProvider<Employees>(_context);
-        }
-
         public Employees GetNewEmployee()
         {
             return new Employees();

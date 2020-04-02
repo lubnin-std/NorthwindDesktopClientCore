@@ -6,6 +6,7 @@
 
 using System;
 using System.ComponentModel;  // INotifyPropertyChanged, TypeDescriptor
+using System.Runtime.CompilerServices;
 
 namespace NorthwindDesktopClientCore.ViewModel
 {
@@ -17,7 +18,7 @@ namespace NorthwindDesktopClientCore.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+        protected void OnPropertyChanged([CallerMemberName]string propertyName="")
         {
             VerifyPropertyName(propertyName);
             UnsavedChanges = true;

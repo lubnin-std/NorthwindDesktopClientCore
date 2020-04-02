@@ -17,7 +17,11 @@
         <views:AllEmployeesView/>
     </DataTemplate>
 
-    
+    <DataTemplate DataType="{x:Type viewmodels:AllCustomersViewModel}">
+        <views:AllCustomersView/>
+    </DataTemplate>
+
+
     <!-- Шаблон для области команд -->
     <DataTemplate x:Key="CommandsTemplate">
         <TextBlock>
